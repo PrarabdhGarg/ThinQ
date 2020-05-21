@@ -10,7 +10,7 @@ async function recordChatMessage(ipfs, roomId, message) {
     } catch (e) {
         console.log(e.toString())
     }
-    await ipfs.files.write('/chatRecords/' + roomId + '.txt', Buffer.concat(chunks).toString() + message + "|" , {
+    await ipfs.files.write('/chatRecords/' + roomId + '.txt', Buffer.concat(chunks).toString() + message + "||" , {
         create: true,
         parents: true
     })
@@ -29,20 +29,7 @@ async function getChatHistory(ipfs, roomId){
     }
 
     let raw_history = Buffer.concat(chunks).toString()
-    let chat_hist = []
-
-    let prevp = 0
-
-    while(prevp < raw_history.length)
-    {
-        let currp=prevp-1;
-
-        for(let i=0 ; i<7 ; i++)    
-            currp = raw_history.indexOf('|' , currp+1)
-
-        chat_hist.push(raw_history.substring(prevp , currp))
-        prevp=currp+1
-    }
+    let chat_hist = raw_history.split("||")
 
     return chat_hist
 }
