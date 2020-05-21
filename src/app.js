@@ -2,6 +2,7 @@ const IPFS = require('ipfs')
 const html = require('choo/html')
 const choo = require('choo')
 const ROOM = require('ipfs-pubsub-room')
+const gdf = require('./gdf')
 
 var app = choo()
 app.use(startup)
@@ -30,10 +31,10 @@ function startup(state, emitter) {
         console.log('IPFS running sucessfully at ' + id)
 
         await ipfs.pubsub.subscribe('Room1', (msg) => {
-            console.log('Message Recived = ' + msg)
+            console.log('Message Recived = ' + gdf.gdf_decode(msg.data.toString()).message)
         })
         console.log('Subscribed to log sucessfully')
 
-        setInterval(() => ipfs.pubsub.publish('Room1', 'This is a message'), 2000)
+        setInterval(() => ipfs.pubsub.publish('Room1', gdf.gdf_encode('This is a message')), 2000)
     })
 }
