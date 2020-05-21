@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "http-server -c-1 -p 3000 public",
+    "compile": "browserify src/app.js -o public/js/app.js -d",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,5 +17,12 @@
   "bugs": {
     "url": "https://github.com/PrarabdhGarg/ThinQ/issues"
   },
-  "homepage": "https://github.com/PrarabdhGarg/ThinQ#readme"
+  "homepage": "https://github.com/PrarabdhGarg/ThinQ#readme",
+  "dependencies": {
+    "browserify": "^16.5.1",
+    "choo": "^7.1.0",
+    "http-server": "^0.12.3",
+    "ipfs": "^0.44.0",
+    "ipfs-pubsub-room": "^2.0.1"
+  }
 }
