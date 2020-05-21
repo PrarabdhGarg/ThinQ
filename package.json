@@ -24,6 +24,8 @@
     "http-server": "^0.12.3",
     "ipfs": "^0.44.0",
     "ipfs-pubsub-room": "^2.0.1",
-    "md5": "^2.2.1"
+    "it-to-buffer": "^1.0.2",
+    "md5": "^2.2.1",
+    "to-buffer": "^1.1.1"
   }
 }

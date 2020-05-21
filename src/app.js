@@ -3,6 +3,7 @@ const html = require('choo/html')
 const choo = require('choo')
 const ROOM = require('ipfs-pubsub-room')
 const gdf = require('./gdf')
+const recordChat = require('./record_chat')
 
 var app = choo()
 app.use(startup)
@@ -32,9 +33,10 @@ function startup(state, emitter) {
 
         await ipfs.pubsub.subscribe('Room1', (msg) => {
             console.log('Message Recived = ' + gdf.gdf_decode(msg.data.toString()).message)
+            recordChat.recordChatMessage(ipfs, 'Room|1', gdf.gdf_decode(msg.data.toString()).message)
         })
         console.log('Subscribed to log sucessfully')
 
-        setInterval(() => ipfs.pubsub.publish('Room1', gdf.gdf_encode('This is a message')), 2000)
+        setInterval(() => ipfs.pubsub.publish('Room1', gdf.gdf_encode('This is a message ' + Math.random())), 2000)
     })
 }
