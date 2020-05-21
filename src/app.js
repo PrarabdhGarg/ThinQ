@@ -33,7 +33,7 @@ function startup(state, emitter) {
 
         await ipfs.pubsub.subscribe('Room1', (msg) => {
             console.log('Message Recived = ' + gdf.gdf_decode(msg.data.toString()).message)
-            recordChat.recordChatMessage(ipfs, 'Room|1', gdf.gdf_decode(msg.data.toString()).message)
+            recordChat.recordChatMessage(ipfs, 'Room|1', msg.data.toString())
         })
         console.log('Subscribed to log sucessfully')
 
