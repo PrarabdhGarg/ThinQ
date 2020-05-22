@@ -2,34 +2,36 @@ var toBuffer = require('to-buffer');
 
 //stores new message in gdf format
 async function recordChatMessage(ipfs, roomId, message) {
-    const chunks = []
+    // Read the previous chat record from the file
+    documentPath = '/chatRecords/' + roomId + '.txt'
+    let previousChat
     try {
-        for await (const chunk of ipfs.files.read('/chatRecords/' + roomId + '.txt')) {
-            chunks.push(chunk)
-        }
-    } catch (e) {
+        previousChat = await ipfs.files.read(documentPath)
+        console.log("File = " + previousChat)
+    } catch(e) {
         console.log(e.toString())
     }
-    await ipfs.files.write('/chatRecords/' + roomId + '.txt', Buffer.concat(chunks).toString() + message + "||" , {
+
+    res = await ipfs.files.write(documentPath, Buffer.from(previousChat + message + '||'), {
         create: true,
         parents: true
+    }, (err, res) => {
+        console.log('Result of add1 = ' + JSON.stringify(res))
+        console.log('Error of add1' + JSON.stringify(err))
     })
-    console.log('File Status = ' + Buffer.concat(chunks).toString())
+    // console.log('Result of add = ' + res)
 }
 
 //returns an array of messages in gdf format
 async function getChatHistory(ipfs, roomId){
-    const chunks = []
+    let previousChat
     try {
-        for await (const chunk of ipfs.files.read('/chatRecords/' + roomId + '.txt')) {
-            chunks.push(chunk)
-        }
-    } catch (e) {
+        previousChat = await ipfs.files.read('/chatRecords/' + roomId + '.txt')
+        console.log("File = " + JSON.stringify(previousChat))
+    } catch(e) {
         console.log(e.toString())
     }
-
-    let raw_history = Buffer.concat(chunks).toString()
-    let chat_hist = raw_history.split("||")
+    let chat_hist = previousChat.split("||")
 
     return chat_hist
 }

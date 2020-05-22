@@ -55,7 +55,6 @@ function startup(state, emitter) {
                 }
             }
         })
-
         app.push
             
         ipfs.once('ready', () => ipfs.id((err, info) => {
@@ -67,9 +66,9 @@ function startup(state, emitter) {
         room.on('peer joined', (peer) => console.log('peer ' + peer + ' joined'))
         room.on('peer left', (peer) => console.log('peer ' + peer + ' left'))
         
-        room.on('message', (message) => {
+        room.on('message', async (message) => {
             console.log('got message from ' + message.from + ': ' + gdf.gdf_decode(message.data.toString()).message)
-            // recordChat.recordChatMessage(ipfs , 'Room1'  , message.data.toString())
+            await recordChat.recordChatMessage(ipfs , 'Room1'  , message.data.toString())
         })
         
         
