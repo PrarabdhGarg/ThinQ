@@ -4,16 +4,37 @@ const choo = require('choo')
 const ROOM = require('ipfs-pubsub-room')
 const gdf = require('./gdf')
 const recordChat = require('./record_chat')
+// const addressBook = require('./addressbook')
 
 var app = choo()
 app.use(startup)
 app.route('/', mainView)
+app.route('/handshake', handshakeForm)
 app.mount('body')
+
+function handshakeForm(state, emit) {
+    return html`
+    <body>
+      <h1>Add user to contact list</h1>
+      <form action="/contact" method="POST" id="form">
+          <div>
+            <label for="Name">Name:</label>
+            <input type="text" name="email" />
+          </div>
+          <div>
+            <label for="IPFS">IPFS:</label>
+            <input type="text" name="IPFS" />
+          </div>
+          <button type="submit">Submit</button>
+      </form>
+      </body>
+    `
+  }
 
 function mainView (state, emit) {
     return html`
       <body>
-        <p>This is a web page</p>
+        <a href='/handshake'>Open handshake web</a>
       </body>
     `
 }
@@ -34,6 +55,8 @@ function startup(state, emitter) {
                 }
             }
         })
+
+        app.push
             
         ipfs.once('ready', () => ipfs.id((err, info) => {
         if (err) { throw err }
