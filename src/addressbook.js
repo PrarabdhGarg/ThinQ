@@ -71,30 +71,76 @@ async function addAddress(ipfs,ipfs_user,name,ipfs_contact) {
     //     parents: true
     // })
     // console.log('File Status = ' + Buffer.concat(chunks).toString())
-    const data=name+':'+ipfs_contact
-    data.toString()
-    ipfs.files.add(new Buffer(data, "binary") ,(err,hash)=>{
-        if(err)
-        {
-            return console.log(err);
-        }
-        console.log(hash);
-    });
+    
+    
+    // const data=name+':'+ipfs_contact
+    // data.toString()
+    // ipfs.files.add(new Buffer(data, "binary") ,(err,hash)=>{
+    //     if(err)
+    //     {
+    //         return console.log(err);
+    //     }
+    //     console.log(hash);
+    // });
 
-}
-async function getAddressBook(ipfs){
-    const chunks = []
+    documentPath = '/addressbooks/'+ipfs_user+'.txt'
+    let contactlist
+    let flag
     try {
-        for await (const chunk of ipfs.files.read('/addressbooks/'+ipfs+'.txt')) {
-            chunks.push(chunk)
-            console.log(chunk)
-        }
-    } catch (e) {
-        console.log(e.toString())
+        contactlist = await ipfs.files.read(documentPath)
+        // console.log("File = " + contactlist)
+        flag=true
+    } catch(e) {
+        flag=false
+        // console.log(e.toString())
     }
 
-    let addressbook = Buffer.concat(chunks).toString();
-    return addressbook;
+    if(flag==true)
+    {
+    res = await ipfs.files.write(documentPath, Buffer.from(contactlist + '\n'+name+':'+ipfs_contact), {
+        create: true,
+        parents: true
+    }, (err, res) => {
+        console.log('Result of add1 = ' + res)
+        console.log('Error of add1' + JSON.stringify(err))
+    })
+}
+else{
+    res = await ipfs.files.write(documentPath, Buffer.from(name+':'+ipfs_contact), {
+        create: true,
+        parents: true
+    }, (err, res) => {
+        console.log('Result of add1 = ' + res)
+        console.log('Error of add1' + JSON.stringify(err))
+    })
+}
+
+}
+
+
+async function getAddressBook(ipfs){
+    // const chunks = []
+    // try {
+    //     for await (const chunk of ipfs.files.read('/addressbooks/'+ipfs+'.txt')) {
+    //         chunks.push(chunk)
+    //         console.log(chunk)
+    //     }
+    // } catch (e) {
+    //     console.log(e.toString())
+    // }
+
+    // let addressbook = Buffer.concat(chunks).toString();
+    // return addressbook;
+    let contactlist
+    try {
+        contactlist = await ipfs.files.read('/addressbooks/'+ipfs+'.txt')
+        console.log("File = " + contactlist)
+    } catch(e) {
+        console.log(e.toString())
+    }
+    // let chat_hist = previousChat.split("||")
+
+    return contactlist
 }
 
 module.exports={addAddress:addAddress,getAddressBook:getAddressBook}
