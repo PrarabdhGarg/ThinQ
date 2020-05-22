@@ -19,24 +19,39 @@ function mainView (state, emit) {
 }
 
 function startup(state, emitter) {
-    let ipfs
 
     emitter.on('DOMContentLoaded', async() => {
-        ipfs = await IPFS.create({
+        const ipfs = new IPFS({
             repo: 'ipfs/thinq/' + Math.random(),
             EXPERIMENTAL: {
-                ipnsPubsub: true
+                pubsub: true
+            },
+            config: {
+                Addresses: {
+                Swarm: [
+                    '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+                ]
+                }
             }
         })
-        id = await ipfs.id().toString()
-        console.log('IPFS running sucessfully at ' + id)
-
-        await ipfs.pubsub.subscribe('Room1', (msg) => {
-            console.log('Message Recived = ' + gdf.gdf_decode(msg.data.toString()).message)
-            recordChat.recordChatMessage(ipfs, 'Room|1', msg.data.toString())
+            
+        ipfs.once('ready', () => ipfs.id((err, info) => {
+        if (err) { throw err }
+        console.log('IPFS node ready with address ' + info.id)
+        
+        const room = ROOM(ipfs, 'Room1')
+        
+        room.on('peer joined', (peer) => console.log('peer ' + peer + ' joined'))
+        room.on('peer left', (peer) => console.log('peer ' + peer + ' left'))
+        
+        room.on('message', (message) => {
+            console.log('got message from ' + message.from + ': ' + gdf.gdf_decode(message.data.toString()).message)
+            // recordChat.recordChatMessage(ipfs , 'Room1'  , message.data.toString())
         })
-        console.log('Subscribed to log sucessfully')
-
-        setInterval(() => ipfs.pubsub.publish('Room1', gdf.gdf_encode('This is a message ' + Math.random())), 2000)
+        
+        
+        setInterval(() => room.broadcast(gdf.gdf_encode('hey everyone!' + Math.random())), 2000)
+        }))
     })
 }
+
