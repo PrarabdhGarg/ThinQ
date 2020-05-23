@@ -41,24 +41,16 @@ function handshakeForm(state, emit) {
         var body = {}
         for (var pair of data.entries()) body[pair[0]] = pair[1]            // 4.
         // body = JSON.stringify(body)                                         // 5.
-        console.log(body);
-        console.log(userid);
+        // console.log(body);
+        // console.log(userid);
         // console.log(userid,body['Name'],body['IPFS']);
         addressBook.addAddress(ipfs1,userid.toString(),body['Name'].toString(),body['IPFS'].toString());
-        // console.log(getAddressBook(userid));
+        contacts=addressBook.getAddressBook(ipfs1,userid.toString());
+        contacts.then((result)=>{
+            console.log(result)
+        });
       }
   }
-// const bodyParser = require('body-parser');
-// app1.listen(3000);
-// // Allows us to parse url forms.Attaches the data to request body.Extended option false as currently only dealing with strings
-// app1.use(bodyParser.urlencoded({ extended: false }));
-// // In app.post give route same as action field in form tag of html
-// app1.post('/contact',(req,res)=>{
-//   console.log(req.body);
-//   addAddress(userid,req.body.name,req.body.IPFS);
-//   console.log(getAddressBook(userid));
-//   res.send('successfully posted data');
-// });
 function mainView (state, emit) {
     let messages = state.messages
     let peers = []
