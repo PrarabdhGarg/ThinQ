@@ -46,6 +46,6 @@ async function getAddressBook(ipfs1, ipfs){
 }
 
 module.exports = {
-    addAddress:addAddress,
-    getAddressBook:getAddressBook
+    addAddress: addAddress,
+    getAddressBook: getAddressBook
 }
