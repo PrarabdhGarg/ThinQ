@@ -60,18 +60,38 @@ function handshakeForm(state, emit) {
 //   res.send('successfully posted data');
 // });
 function mainView (state, emit) {
-    messages = state.messages
+    let messages = state.messages
+    let peers = []
+    
+    if(room1)
+        peers = room1.getPeers()
 
     return html`
       <body>
-        <ul id="inbox">
+        <h3>Connected Peers</h3>
+        <ol>
+        ${peers.map((peer , i)=>{
+            return html`
+                <li>${peer}</li>
+            `
+        })}
+        </ol>
+        <hr>
+        <h3>Chat</h3>
+        <ul id="inbox" style="list-style-type:none;">
         ${messages.map((msg , i)=>{
             tmsg = gdf.gdf_decode(msg)
+            let sender
+            if(tmsg.sender == userid)
+                sender = "ME"
+            else
+                sender = tmsg.sender
             return html`
-                <li>${tmsg.sender} : ${tmsg.message}</li>
+                <li>${sender} : ${tmsg.message}</li>
             `
         })}
         </ul>
+        <hr>
         <form id="login" onsubmit=${onsubmit}>
         <label for="message">
             Enter Message:
@@ -82,7 +102,8 @@ function mainView (state, emit) {
         >
         <input type="submit" value="Send">
         </form>
-        <a href='/handshake'>Open handshake web</a>
+        <hr>
+        <a href='/handshake'>Address Book</a>
       </body>
     `
     function onsubmit(e){
@@ -94,7 +115,8 @@ function mainView (state, emit) {
     }
 
 }
-let ipfs1 ,room1
+let ipfs1
+let room1 = null
 function startup(state, emitter) {
 
     state.messages = []
@@ -125,8 +147,8 @@ function startup(state, emitter) {
 
         room1 = room
         
-        room.on('peer joined', (peer) => console.log('peer ' + peer + ' joined'))
-        room.on('peer left', (peer) => console.log('peer ' + peer + ' left'))
+        room.on('peer joined', (peer) => emitter.emit("render"))
+        room.on('peer left', (peer) => emitter.emit("render"))
         
         room.on('message', async (message) => {
             state.messages.push(message.data.toString())
