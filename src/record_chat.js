@@ -1,5 +1,3 @@
-var toBuffer = require('to-buffer');
-
 //stores new message in gdf format
 async function recordChatMessage(ipfs, roomId, message) {
     // Read the previous chat record from the file
@@ -11,22 +9,19 @@ async function recordChatMessage(ipfs, roomId, message) {
     } catch(e) {
         console.log(e.toString())
     }
-
     res = await ipfs.files.write(documentPath, Buffer.from(previousChat + message + '||'), {
         create: true,
         parents: true
     }, (err, res) => {
-        if(err)
-        {
+        if(err) {
             console.log('Result of add1 = ' + JSON.stringify(res))
             console.log('Error of add1' + JSON.stringify(err))
         }
     })
-    // console.log('Result of add = ' + res)
 }
 
 //returns an array of messages in gdf format
-async function getChatHistory(ipfs, roomId){
+async function getChatHistory(ipfs, roomId) {
     let previousChat
     try {
         previousChat = await ipfs.files.read('/chatRecords/' + roomId + '.txt')
@@ -35,9 +30,10 @@ async function getChatHistory(ipfs, roomId){
         console.log(e.toString())
     }
     let chat_hist = await previousChat.split("||")
-
     return chat_hist
 }
 
-exports.recordChatMessage = recordChatMessage
-exports.getChatHistory = getChatHistory
+module.exports = {
+    getChatHistory: getChatHistory,
+    recordChatMessage: recordChatMessage
+}
