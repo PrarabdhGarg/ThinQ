@@ -101,8 +101,11 @@ async function addAddress(ipfs,ipfs_user,name,ipfs_contact) {
         create: true,
         parents: true
     }, (err, res) => {
-        console.log('Result of add1 = ' + res)
-        console.log('Error of add1' + JSON.stringify(err))
+        if(err)
+        {
+            console.log('Result of add1 = ' + res)
+            console.log('Error of add1' + JSON.stringify(err))
+        }
     })
 }
 else{

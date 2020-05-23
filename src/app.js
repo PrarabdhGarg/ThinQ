@@ -3,7 +3,7 @@ const html = require('choo/html')
 const choo = require('choo')
 const ROOM = require('ipfs-pubsub-room')
 const gdf = require('./gdf')
-// const recordChat = require('./record_chat')
+const recordChat = require('./record_chat')
 const addressBook = require('./addressbook')
 var app = choo()
 app.use(startup)
@@ -60,14 +60,44 @@ function handshakeForm(state, emit) {
 //   res.send('successfully posted data');
 // });
 function mainView (state, emit) {
+    messages = state.messages
+
     return html`
       <body>
+        <ul id="inbox">
+        ${messages.map((msg , i)=>{
+            tmsg = gdf.gdf_decode(msg)
+            return html`
+                <li>${tmsg.sender} : ${tmsg.message}</li>
+            `
+        })}
+        </ul>
+        <form id="login" onsubmit=${onsubmit}>
+        <label for="message">
+            Enter Message:
+        </label>
+        <input id="message" name="message"
+            type="text"
+            required
+        >
+        <input type="submit" value="Send">
+        </form>
         <a href='/handshake'>Open handshake web</a>
       </body>
     `
+    function onsubmit(e){
+        e.preventDefault();
+        let form = e.currentTarget
+        let data = new FormData(form)
+
+        room1.broadcast(gdf.gdf_encode(data.get("message") , userid))
+    }
+
 }
-let ipfs1
+let ipfs1 ,room1
 function startup(state, emitter) {
+
+    state.messages = []
 
     emitter.on('DOMContentLoaded', async() => {
         const ipfs = new IPFS({
@@ -92,17 +122,19 @@ function startup(state, emitter) {
         console.log('IPFS node ready with address ' + info.id)
         userid=info.id
         const room = ROOM(ipfs, 'Room1')
+
+        room1 = room
         
         room.on('peer joined', (peer) => console.log('peer ' + peer + ' joined'))
         room.on('peer left', (peer) => console.log('peer ' + peer + ' left'))
         
         room.on('message', async (message) => {
-            console.log('got message from ' + message.from + ': ' + gdf.gdf_decode(message.data.toString()).message)
-            await recordChat.recordChatMessage(ipfs , 'Room1'  , message.data.toString())
+            state.messages.push(message.data.toString())
+            emitter.emit("render")
         })
         
         
-        setInterval(() => room.broadcast(gdf.gdf_encode('hey everyone!' + Math.random())), 2000)
+        // setInterval(() => room.broadcast(gdf.gdf_encode('hey everyone!' + Math.random())), 2000)
         }))
     })
 }

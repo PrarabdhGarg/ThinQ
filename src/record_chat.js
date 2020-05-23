@@ -16,8 +16,11 @@ async function recordChatMessage(ipfs, roomId, message) {
         create: true,
         parents: true
     }, (err, res) => {
-        console.log('Result of add1 = ' + JSON.stringify(res))
-        console.log('Error of add1' + JSON.stringify(err))
+        if(err)
+        {
+            console.log('Result of add1 = ' + JSON.stringify(res))
+            console.log('Error of add1' + JSON.stringify(err))
+        }
     })
     // console.log('Result of add = ' + res)
 }
@@ -27,11 +30,11 @@ async function getChatHistory(ipfs, roomId){
     let previousChat
     try {
         previousChat = await ipfs.files.read('/chatRecords/' + roomId + '.txt')
-        console.log("File = " + JSON.stringify(previousChat))
+        // console.log("File = " + JSON.stringify(previousChat))
     } catch(e) {
         console.log(e.toString())
     }
-    let chat_hist = previousChat.split("||")
+    let chat_hist = await previousChat.split("||")
 
     return chat_hist
 }
