@@ -88,40 +88,37 @@ async function addAddress(ipfs,ipfs_user,name,ipfs_contact) {
     let flag
     try {
         contactlist = await ipfs.files.read(documentPath)
-        // console.log("File = " + contactlist)
+        console.log("File = " + contactlist)
         flag=true
     } catch(e) {
         flag=false
-        // console.log(e.toString())
+        console.log(e.toString())
     }
 
     if(flag==true)
     {
-    res = await ipfs.files.write(documentPath, Buffer.from(contactlist + '\n'+name+':'+ipfs_contact), {
+    res = await ipfs.files.write(documentPath, Buffer.from(contactlist +name+':'+ipfs_contact+'|'), {
         create: true,
         parents: true
     }, (err, res) => {
-        if(err)
-        {
-            console.log('Result of add1 = ' + res)
-            console.log('Error of add1' + JSON.stringify(err))
-        }
+        // console.log('Result of add1 = ' + res)
+        // console.log('Error of add1' + JSON.stringify(err))
     })
 }
 else{
-    res = await ipfs.files.write(documentPath, Buffer.from(name+':'+ipfs_contact), {
+    res = await ipfs.files.write(documentPath, Buffer.from(name+':'+ipfs_contact+'|'), {
         create: true,
         parents: true
     }, (err, res) => {
-        console.log('Result of add1 = ' + res)
-        console.log('Error of add1' + JSON.stringify(err))
+        // console.log('Result of add1 = ' + res)
+        // console.log('Error of add1' + JSON.stringify(err))
     })
 }
 
 }
 
 
-async function getAddressBook(ipfs){
+async function getAddressBook(ipfs1,ipfs){
     // const chunks = []
     // try {
     //     for await (const chunk of ipfs.files.read('/addressbooks/'+ipfs+'.txt')) {
@@ -134,16 +131,18 @@ async function getAddressBook(ipfs){
 
     // let addressbook = Buffer.concat(chunks).toString();
     // return addressbook;
+    addressbook=[]
+    documentPath = '/addressbooks/'+ipfs+'.txt'
     let contactlist
     try {
-        contactlist = await ipfs.files.read('/addressbooks/'+ipfs+'.txt')
-        console.log("File = " + contactlist)
+        contactlist = await ipfs1.files.read(documentPath)
+        console.log("File = " + (contactlist+'').split("|"))
     } catch(e) {
         console.log(e.toString())
     }
-    // let chat_hist = previousChat.split("||")
+    addressbook = (contactlist+'').split("|")
 
-    return contactlist
+    return addressbook
 }
 
 module.exports={addAddress:addAddress,getAddressBook:getAddressBook}
