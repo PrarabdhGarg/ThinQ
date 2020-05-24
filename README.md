@@ -2,7 +2,7 @@
 The aim is to create a decentralised framework to develop apps on. The initial attempt would be to build a chat application and queue management system.
 IPFS is used to handle the data transport between users.  
 ### Requirements
-- Node.js (and npm)
+- Node.js (and npm) - Refer [here](https://nodejs.org/en/download/)
 - Web Browser
 --------
 ### TODO
@@ -14,8 +14,10 @@ To run the current application cd to the folder and :-
 ```
 npm install   
 npm run compile  
-npm start 
+npm run start 
 ```
+Once the server is running, open your browser and go to [localhost:3000/](localhost:3000/)  
+
 ----------
 ### Group Members
 1. Himanshu Pandey
