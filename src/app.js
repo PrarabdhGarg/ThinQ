@@ -15,7 +15,7 @@ app.mount('body')
 
 function startup(state, emitter) {
     state.messages = []
-    state.addressBook = new Object()
+    state.addressBook = new Object() 
     emitter.on('DOMContentLoaded', async() => {
         const ipfs = new IPFS({
             repo: 'ipfs/thinq/' + Math.random(),
@@ -46,5 +46,12 @@ function startup(state, emitter) {
           })
         })
       )
+  })
+
+  emitter.on('navigate', async() => {
+    addressBook.getAddressBook(state.ipfs, state.userid.toString()).then((res)=>{
+      state.addressBook = res
+      emitter.emit('render')
+    });
   })
 }

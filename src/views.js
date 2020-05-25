@@ -62,15 +62,16 @@ function mainView(state, emit) {
 }
 
 function handshakeForm(state, emit) {
-    function onsubmit(e) {
+    async function onsubmit(e) {
         e.preventDefault()
         var form = e.currentTarget
         var data = new FormData(form)
         var body = {}
         for (var pair of data.entries()) body[pair[0]] = pair[1]
-        addressBook.addAddress(state.ipfs, state.userid.toString(), body['Name'].toString(), body['IPFS'].toString());
+        await addressBook.addAddress(state.ipfs, state.userid.toString(), body['Name'].toString(), body['IPFS'].toString());
         addressBook.getAddressBook(state.ipfs, state.userid.toString()).then((res)=>{
             state.addressBook = res
+            emit('render')
         });
     }
 
