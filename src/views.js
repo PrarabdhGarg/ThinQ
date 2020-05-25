@@ -35,6 +35,8 @@ function mainView(state, emit) {
             let sender
             if(tmsg.sender == state.userid)
                 sender = "ME"
+            else if(state.addressBook[tmsg.sender])
+                sender = state.addressBook[tmsg.sender]
             else
                 sender = tmsg.sender
             return html`
@@ -67,9 +69,8 @@ function handshakeForm(state, emit) {
         var body = {}
         for (var pair of data.entries()) body[pair[0]] = pair[1]
         addressBook.addAddress(state.ipfs, state.userid.toString(), body['Name'].toString(), body['IPFS'].toString());
-        contacts = addressBook.getAddressBook(state.ipfs, state.userid.toString());
-        contacts.then((result)=>{
-            console.log(result)
+        addressBook.getAddressBook(state.ipfs, state.userid.toString()).then((res)=>{
+            state.addressBook = res
         });
     }
 
@@ -92,6 +93,7 @@ function handshakeForm(state, emit) {
              >
             <input type="submit" value="Login">
         </form>
+        <a href='/'>Chat Box</a>
     </body>
     `
 }

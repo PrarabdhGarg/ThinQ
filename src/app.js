@@ -15,6 +15,7 @@ app.mount('body')
 
 function startup(state, emitter) {
     state.messages = []
+    state.addressBook = new Object()
     emitter.on('DOMContentLoaded', async() => {
         const ipfs = new IPFS({
             repo: 'ipfs/thinq/' + Math.random(),

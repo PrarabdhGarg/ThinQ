@@ -12,7 +12,7 @@ async function addAddress(ipfs, ipfs_user, name, ipfs_contact) {
     }
 
     if(flag == true) {
-        res = await ipfs.files.write(documentPath, Buffer.from(contactlist +name+':'+ipfs_contact+'|'), {
+        res = await ipfs.files.write(documentPath, Buffer.from(contactlist +name+'|'+ipfs_contact+'||'), {
             create: true,
             parents: true
         }, (err, res) => {
@@ -20,7 +20,7 @@ async function addAddress(ipfs, ipfs_user, name, ipfs_contact) {
             // console.log('Error of add1' + JSON.stringify(err))
         })
     } else {
-        res = await ipfs.files.write(documentPath, Buffer.from(name + ':' + ipfs_contact + '|'), {
+        res = await ipfs.files.write(documentPath, Buffer.from(name + '|' + ipfs_contact + '||'), {
             create: true,
             parents: true
         }, (err, res) => {
@@ -32,17 +32,28 @@ async function addAddress(ipfs, ipfs_user, name, ipfs_contact) {
 
 
 async function getAddressBook(ipfs1, ipfs){
+    await setTimeout(1000)
     addressbook=[]
     documentPath = '/addressbooks/' + ipfs + '.txt'
-    let contactlist
+    dict = new Object()
+    let contactlist = ""
     try {
-        contactlist = await ipfs1.files.read(documentPath)
-        console.log("File = " + (contactlist + '').split("|"))
+        contactlist = (await ipfs1.files.read(documentPath)).toString()
+        console.log("File = " + contactlist.split("|"))
     } catch(e) {
         console.log(e.toString())
     }
-    addressbook = (contactlist + '').split("|")
-    return addressbook
+    if(contactlist != ""){
+        contactlist.trim()
+        addressbook = await contactlist.split("||")
+        for(address of addressbook){
+            if(!address.split("|")[1])
+                continue
+            dict[address.split("|")[1]] = address.split("|")[0] 
+        }
+    }
+
+    return dict
 }
 
 module.exports = {
