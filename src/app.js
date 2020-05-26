@@ -9,12 +9,13 @@ const views = require('./views')
 
 var app = choo()
 app.use(startup)
-app.route('/', views.mainView)
-app.route('/handshake', views.handshakeForm)
+app.route('/chat/:recipient ', views.mainView)
+app.route('/', views.handshakeForm)
 app.mount('body')
 
 function startup(state, emitter) {
     state.messages = []
+    state.recipient = ""
     state.addressBook = new Object() 
     emitter.on('DOMContentLoaded', async() => {
         const ipfs = new IPFS({
@@ -37,21 +38,14 @@ function startup(state, emitter) {
           if (err) { throw err }
           console.log('IPFS node ready with address ' + info.id)
           state.userid = info.id
-          state.room = ROOM(ipfs, 'Room1')
-          state.room.on('peer joined', (peer) => emitter.emit("render"))
-          state.room.on('peer left', (peer) => emitter.emit("render"))
-          state.room.on('message', async (message) => {
-            state.messages.push(message.data.toString())
-            emitter.emit("render")
-          })
         })
       )
   })
 
-  emitter.on('navigate', async() => {
-    addressBook.getAddressBook(state.ipfs, state.userid.toString()).then((res)=>{
-      state.addressBook = res
-      emitter.emit('render')
-    });
-  })
+    emitter.on('navigate', async() => {
+      addressBook.getAddressBook(state.ipfs, state.userid.toString()).then((res)=>{
+        state.addressBook = res
+        emitter.emit('render')
+      });
+    })
 }
