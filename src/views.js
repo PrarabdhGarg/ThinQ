@@ -14,11 +14,20 @@ function mainView(state, emit) {
 
     if(state.recipient!=state.params[Object.keys(state.params)[0]])
     {
+        if(state.room)
+            state.room.leave()
         state.recipient = state.params[Object.keys(state.params)[0]]
         state.room = ROOM(state.ipfs, `${participants[0]}||${participants[1]}`)
+        state.online = false
 
-        state.room.on('peer joined', (peer) => console.log("Joined"))
-        // state.room.on('peer left', (peer) => emit("render"))
+        state.room.on('peer joined', (peer) => {
+            state.online = true
+            emit("render")
+        })
+        state.room.on('peer left', (peer) => {
+            state.online = false
+            emit("render")
+        })
         state.room.on('message', async (message) => {
             state.messages.push(message.data.toString())
             emit("render")
@@ -38,16 +47,9 @@ function mainView(state, emit) {
 
     return html`
     <body>
-        <h3>Connected Peers</h3>
-        <ol>
-        ${peers.map((peer , i)=>{
-            return html`
-                <li>${peer}</li>
-            `
-        })}
-        </ol>
+        <h2>${state.addressBook[state.recipient]}</h2>
+        ${state.online?html`online`:html`offline`}
         <hr>
-        <h3>Chat</h3>
         <ul id="inbox" style="list-style-type:none;">
         ${messages.map((msg , i)=>{
             tmsg = gdf.gdf_decode(msg)
