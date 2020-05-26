@@ -2,6 +2,7 @@ const html = require('choo/html')
 const gdf = require('./gdf')
 const addressBook = require('./addressbook')
 const ROOM = require('ipfs-pubsub-room')
+const recordChat = require('./record_chat')
 
 function mainView(state, emit) {
     let messages = state.messages
@@ -29,16 +30,17 @@ function mainView(state, emit) {
             emit("render")
         })
         state.room.on('message', async (message) => {
+            recordChat.recordChatMessage(state.ipfs, `${participants[0]}||${participants[1]}`, message.data.toString())
             state.messages.push(message.data.toString())
             emit("render")
         })
     }
 
-    function onsubmit(e) {
+    async function onsubmit(e) {
         e.preventDefault();
         let form = e.currentTarget
         let data = new FormData(form)
-
+        await recordChat.recordChatMessage(state.ipfs, `${participants[0]}||${participants[1]}`, gdf.gdf_encode(data.get('message'), state.userid, state.recipient))
         state.room.broadcast(gdf.gdf_encode(data.get("message") , state.userid , state.recipient))
     }
 
@@ -94,10 +96,8 @@ function handshakeForm(state, emit) {
         var body = {}
         for (var pair of data.entries()) body[pair[0]] = pair[1]
         await addressBook.addAddress(state.ipfs, state.userid.toString(), body['Name'].toString(), body['IPFS'].toString());
-        addressBook.getAddressBook(state.ipfs, state.userid.toString()).then((res)=>{
-            state.addressBook = res
-            emit("render")
-        });
+        state.addressBook[body['IPFS'].toString()] = body['Name'].toString()
+        emit("render")
     }
 
     contactlist = state.addressBook
