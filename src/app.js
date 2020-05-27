@@ -16,10 +16,11 @@ app.mount('body')
 function startup(state, emitter) {
     state.messages = []
     state.recipient = ""
-    state.addressBook = new Object() 
+    state.addressBook = new Object()
     emitter.on('DOMContentLoaded', async() => {
         const ipfs = new IPFS({
-            repo: 'ipfs/thinq/' + Math.random(),
+            repo: 'ipfs/thinq/',
+            init: true,
             EXPERIMENTAL: {
                 pubsub: true
             },
@@ -38,6 +39,10 @@ function startup(state, emitter) {
           if (err) { throw err }
           console.log('IPFS node ready with address ' + info.id)
           state.userid = info.id
+          addressBook.getAddressBook(state.ipfs, state.userid.toString()).then((res)=>{
+            state.addressBook = res
+            emitter.emit('render')
+          });
         })
       )
   })

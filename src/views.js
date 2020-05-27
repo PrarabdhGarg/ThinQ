@@ -11,8 +11,6 @@ function mainView(state, emit) {
     let participants = [state.userid , state.params[Object.keys(state.params)[0]]]
     participants.sort()
 
-    console.log(`Recipient: ${state.params[Object.keys(state.params)[0]]} Room : ${participants[0]}||${participants[1]}`)
-
     if(state.recipient!=state.params[Object.keys(state.params)[0]])
     {
         if(state.room)

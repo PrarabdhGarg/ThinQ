@@ -32,7 +32,6 @@ async function addAddress(ipfs, ipfs_user, name, ipfs_contact) {
 
 
 async function getAddressBook(ipfs1, ipfs){
-    await setTimeout(1000)
     addressbook=[]
     documentPath = '/addressbooks/' + ipfs + '.txt'
     dict = new Object()
