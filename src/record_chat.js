@@ -5,7 +5,7 @@ async function recordChatMessage(ipfs, roomId, message) {
     let previousChat
     try {
         previousChat = await ipfs.files.read(documentPath)
-        console.log("File = " + previousChat)
+        // console.log("File = " + previousChat)
     } catch(e) {
         console.log(e.toString())
     }
@@ -22,14 +22,14 @@ async function recordChatMessage(ipfs, roomId, message) {
 
 //returns an array of messages in gdf format
 async function getChatHistory(ipfs, roomId) {
-    let previousChat
+    let previousChat = ""
     try {
         previousChat = await ipfs.files.read('/chatRecords/' + roomId + '.txt')
-        // console.log("File = " + JSON.stringify(previousChat))
+        console.log("File = " + previousChat)
     } catch(e) {
         console.log(e.toString())
     }
-    let chat_hist = await previousChat.split("||")
+    let chat_hist = await (previousChat.toString()).split("||")
     return chat_hist
 }
 

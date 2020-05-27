@@ -18,6 +18,10 @@ function mainView(state, emit) {
         state.recipient = state.params[Object.keys(state.params)[0]]
         state.room = ROOM(state.ipfs, `${participants[0]}||${participants[1]}`)
         state.online = false
+        recordChat.getChatHistory(state.ipfs , `${participants[0]}||${participants[1]}`).then((res)=>{
+            state.messages = res
+            emit('render')
+        })
 
         state.room.on('peer joined', (peer) => {
             state.online = true
@@ -98,6 +102,9 @@ function handshakeForm(state, emit) {
         emit("render")
     }
 
+    if(state.room)
+        state.room.leave()
+
     contactlist = state.addressBook
 
     return html`
@@ -126,7 +133,7 @@ function handshakeForm(state, emit) {
                 type="text"
                 required
              >
-            <input type="submit" value="Login">
+            <input type="submit" value="Add">
         </form>
     </body>
     `
