@@ -1,0 +1,27 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/node', '/usr/bin/npm', 'run', 'setup' ]
+2 info using npm@3.5.2
+3 info using node@v8.10.0
+4 verbose run-script [ 'presetup', 'setup', 'postsetup' ]
+5 info lifecycle thinq@1.0.0~presetup: thinq@1.0.0
+6 silly lifecycle thinq@1.0.0~presetup: no script for presetup, continuing
+7 info lifecycle thinq@1.0.0~setup: thinq@1.0.0
+8 verbose lifecycle thinq@1.0.0~setup: unsafe-perm in lifecycle true
+9 verbose lifecycle thinq@1.0.0~setup: PATH: /usr/share/npm/bin/node-gyp-bin:/mnt/d/PS1/ThinQ/node_modules/.bin:/home/prarabdh/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/mnt/c/Program Files/WindowsApps/CanonicalGroupLimited.UbuntuonWindows_2004.2020.424.0_x64__79rhkp1fndgsc:/mnt/c/Python27/:/mnt/c/Python27/Scripts:/mnt/c/Program Files (x86)/Common Files/Intel/Shared Libraries/redist/intel64/compiler:/mnt/c/Program Files (x86)/Intel/Intel(R) Management Engine Components/iCLS/:/mnt/c/Program Files/Intel/Intel(R) Management Engine Components/iCLS/:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files (x86)/Intel/Intel(R) Management Engine Components/DAL:/mnt/c/Program Files/Intel/Intel(R) Management Engine Components/DAL:/mnt/c/Program Files (x86)/Intel/Intel(R) Management Engine Components/IPT:/mnt/c/Program Files/Intel/Intel(R) Management Engine Components/IPT:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/ProgramData/chocolatey/bin:/mnt/d/Android/flutter/bin:/"C:/Windows/system32:/":/mnt/c/platform-tools:/mnt/c/Program Files/PuTTY/:/mnt/c/Users/prara/scoop/apps/gh/0.5.5/bin:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/130/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/140/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/140/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/140/DTS/Binn/:/mnt/c/MinGW64/bin:/mnt/c/Program Files/nodejs/:/mnt/c/Users/prara/scoop/shims:/mnt/c/Pro:/mnt/c/Users/prara/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/MinGW/bin:/mnt/c/Users/prara/AppData/Roaming/npm:/snap/bin
+10 verbose lifecycle thinq@1.0.0~setup: CWD: /mnt/d/PS1/ThinQ
+11 silly lifecycle thinq@1.0.0~setup: Args: [ '-c', 'http-server -c-1 -p 3000 public' ]
+12 verbose stack Error: write EIO
+12 verbose stack     at _errnoException (util.js:1022:11)
+12 verbose stack     at WriteWrap.afterWrite [as oncomplete] (net.js:880:14)
+13 verbose cwd /mnt/d/PS1/ThinQ
+14 error Linux 4.4.0-18362-Microsoft
+15 error argv "/usr/bin/node" "/usr/bin/npm" "run" "setup"
+16 error node v8.10.0
+17 error npm  v3.5.2
+18 error code EIO
+19 error errno EIO
+20 error syscall write
+21 error write EIO
+22 error If you need help, you may report this error at:
+22 error     <https://github.com/npm/npm/issues>
+23 verbose exit [ 1, true ]

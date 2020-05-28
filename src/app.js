@@ -6,6 +6,7 @@ const gdf = require('./gdf')
 const recordChat = require('./record_chat')
 const addressBook = require('./addressbook')
 const views = require('./views')
+const database = require('./database')
 
 var app = choo()
 app.use(startup)
@@ -34,6 +35,8 @@ function startup(state, emitter) {
         })
         state.ipfs = ipfs
         app.push
+
+        database.addMessage()
             
         ipfs.once('ready', () => ipfs.id((err, info) => {
           if (err) { throw err }

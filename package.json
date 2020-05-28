@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "http-server -c-1 -p 3000 public",
+    "start": "node ./src/server/server.js",
+    "setup": "http-server -c-1 -p 3000 public",
     "compile": "browserify src/app.js -o public/js/app.js -d",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,6 +20,8 @@
   },
   "homepage": "https://github.com/PrarabdhGarg/ThinQ#readme",
   "dependencies": {
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
     "browserify": "^16.5.1",
     "choo": "^7.1.0",
     "http-server": "^0.12.3",
@@ -26,10 +29,10 @@
     "ipfs-pubsub-room": "^1.4.1",
     "it-to-buffer": "^1.0.2",
     "md5": "^2.2.1",
-    "to-buffer": "^1.1.1",
     "mysql": "^2.18.1",
-    "sequelize": "^5.21.10",
+    "sequelize": "^5.21.11",
     "sequelize-cli": "^5.5.1",
-    "sqlite3": "^4.2.0"
+    "sqlite3": "^4.2.0",
+    "to-buffer": "^1.1.1"
   }
 }
