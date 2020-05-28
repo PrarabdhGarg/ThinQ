@@ -24,6 +24,8 @@
     "body-parser": "^1.19.0",
     "browserify": "^16.5.1",
     "choo": "^7.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
     "http-server": "^0.12.3",
     "ipfs": "^0.33.1",
     "ipfs-pubsub-room": "^1.4.1",
