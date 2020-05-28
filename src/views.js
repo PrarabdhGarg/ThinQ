@@ -6,7 +6,6 @@ const recordChat = require('./record_chat')
 
 function mainView(state, emit) {
     let messages = state.messages
-    let peers = []
 
     let participants = [state.userid , state.params[Object.keys(state.params)[0]]]
     participants.sort()
@@ -46,8 +45,6 @@ function mainView(state, emit) {
         state.room.broadcast(gdf.gdf_encode(data.get("message") , state.userid , state.recipient))
     }
 
-    if(state.room)
-        peers = state.room.getPeers()
 
     return html`
     <body>
@@ -103,7 +100,11 @@ function handshakeForm(state, emit) {
     }
 
     if(state.room)
+    {
         state.room.leave()
+        state.room = null
+        state.recipient = ""
+    }
 
     contactlist = state.addressBook
 
