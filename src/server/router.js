@@ -21,7 +21,7 @@ router.post('/insertqueue', function(req, res) {
 });
 
 router.get('/getrecord/:recip', function(req, res) {
-    models.chatRecord.findAll({ where: { recipient: req.params.recip } }).then(function(chats) {
+    models.chatRecord.findAll({ where: { [Op.or]: [{recipient: req.params.recip} , {sender: req.params.recip}] } }).then(function(chats) {
         res.json(chats);
       }).catch((error) => {
         console.error(error)
