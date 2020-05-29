@@ -32,8 +32,9 @@ async function addQueue(sender , message , recipient) {
 
 async function getRecords(recipient){
     let chat_hist = (await axios.get(`http://localhost:3001/getrecord/${recipient}`)).data
+    // console.log('Response \n' + JSON.stringify(chat_hist))
 
-    return JSON.parse(chat_hist)
+    return chat_hist
 }
 
 async function getQueue(){

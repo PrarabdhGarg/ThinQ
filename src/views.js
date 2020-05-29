@@ -53,7 +53,10 @@ function mainView(state, emit) {
         <hr>
         <ul id="inbox" style="list-style-type:none;">
         ${messages.map((msg , i)=>{
-            tmsg = gdf.gdf_decode(msg)
+            if(typeof(msg) == "string")
+                tmsg = gdf.gdf_decode(msg)
+            else
+                tmsg = msg
             if(state.recipient == tmsg.sender || state.recipient == tmsg.recipient){
                 let sender
                 if(tmsg.sender == state.userid)

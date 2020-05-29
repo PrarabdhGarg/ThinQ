@@ -16,4 +16,10 @@ app.listen(3001, () => {
         dialect: 'sqlite',
         storage:'/databases/messages.db'
     })
+    global.ChatRecord.sync({force: true}).then(() => {
+        console.log('Message Record table created')
+    })
+    global.MessageQueue.sync({force: true}).then(() => {
+        console.log('Message Queue Table created')
+    })
 })

@@ -1,3 +1,6 @@
+const database = require('./database')
+const gdf = require('./gdf')
+
 //stores new message in gdf format
 async function recordChatMessage(ipfs, roomId, message) {
     // Read the previous chat record from the file
@@ -9,6 +12,8 @@ async function recordChatMessage(ipfs, roomId, message) {
     } catch(e) {
         console.log(e.toString())
     }
+    var decodedMessage = gdf.gdf_decode(message)
+    database.addRecord(decodedMessage.sender, decodedMessage.message, decodedMessage.recipient)
     res = await ipfs.files.write(documentPath, Buffer.from(previousChat + message + '||'), {
         create: true,
         parents: true
@@ -29,7 +34,13 @@ async function getChatHistory(ipfs, roomId) {
     } catch(e) {
         console.log(e.toString())
     }
-    let chat_hist = await (previousChat.toString()).split("||")
+    // let chat_hist = await (previousChat.toString()).split("||")
+    let chat_hist
+    if(roomId.split("||")[0] == ipfs)
+        chat_hist = await database.getRecords(roomId.split("||")[1])
+    else
+        chat_hist = await database.getRecords(roomId.split("||")[0])
+    console.log("Prev Chats = " + JSON.stringify(chat_hist))
     return chat_hist
 }
 

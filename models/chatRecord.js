@@ -1,7 +1,7 @@
 const md5 = require("md5")
 
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define("chatRecord", {
+    global.ChatRecord = sequelize.define("chatRecord", {
       sender: DataTypes.STRING,
       message: DataTypes.STRING,
       recipient: DataTypes.STRING
@@ -13,4 +13,5 @@ module.exports = function(sequelize, DataTypes) {
         r_classifier: function() {return "USER"}
       }
     })
+    return global.ChatRecord
   }
