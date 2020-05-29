@@ -1,2 +1,2 @@
 node_modules
-/src/server/ipfs
+src/server/ipfs
