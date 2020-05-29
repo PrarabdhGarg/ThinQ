@@ -6,6 +6,7 @@ const Sequelize = require('sequelize')
 const cors = require('cors')
 const IPFS = require('ipfs')
 const router = require('./router')
+const ROOM = require('ipfs-pubsub-room')
 
 let ipfs
 let room
@@ -17,7 +18,7 @@ app.use("/", router)
 
 app.listen(3001, () => {
     ipfs = new IPFS({
-        repo: 'ipfs/thinq/',
+        repo: path.join(__dirname , 'ipfs/thinq/'),
         init: true,
         EXPERIMENTAL: {
             pubsub: true
