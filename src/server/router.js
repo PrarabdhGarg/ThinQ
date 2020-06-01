@@ -2,6 +2,14 @@ var models  = require('../../models');
 const express = require('express');
 var router = express.Router();
 
+router.get('/' , function(req, res) {
+    res.render('addressbook')
+})
+
+router.get('/chat/:recip' , function(req , res) {
+    res.render('chat')
+})
+
 router.post('/insertrecord', function(req, res) {
     models.chatRecord.create({ sender: req.body.sender, message: req.body.message,recipient:req.body.reciver }).then(function(chatrecord) {
         console.log("Record inserted in db");
