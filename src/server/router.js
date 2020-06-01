@@ -10,11 +10,19 @@ router.get('/chat/:recip' , function(req , res) {
     res.render('chat')
 })
 
+router.get('/getAddress' , function(req , res){
+    models.addressRecord.findAll({}).then((result)=>{
+        let addressBook = {}
+        for(address of result)
+            addressBook[address.dataValues.ipfs] = address.dataValues.name
+        res.json(addressBook)
+    })
+})
+
 router.post('/addAddreess', function(req, res) {
     console.log('Entered POST route')
     models.addressRecord.create({ipfs: req.body.ipfs, name: req.body.name}).then((addressRecord) => {
-        console.log("Address added to database")
-        res.render('addressbook')
+        res.json({name: addressRecord.dataValues.name , ipfs: addressRecord.dataValues.ipfs})
     }).catch((error) => {
         console.log(error)
     })

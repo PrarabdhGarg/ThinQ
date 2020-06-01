@@ -5,10 +5,7 @@
     </head>
     <body>
         <h2>Contacts</h2>
-        <ol>
-            <li>Link to Contact 1</li>
-            <li>Link to Contact 2</li>
-        </ol>
+        <ol id="contacts"></ol>
         <hr>
         <form id="login">
             <label for="Name">
@@ -29,13 +26,19 @@
         </form>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
+
+            $.ajax({url: "http://localhost:3001/getAddress" , type:"GET" , async: false , contentType:"JSON" , success: function(res){
+                for(ipfs of Object.keys(res))
+                    $("#contacts").append(`<li><a href="/chat/${ipfs}">${res[ipfs]}</a></li>`)
+            }})
+
             function function1() {
                 console.log("function called")
                 $.ajax({url: "http://localhost:3001/addAddreess", type:'POST', async: true, data: {
                     ipfs: document.getElementById('login').elements[1].value,
                     name: document.getElementById('login').elements[0].value
-                } ,success: function(result){
-                    console.log('Request executed sucessfully')
+                } ,success: function(res){
+                    $("#contacts").append(`<li><a href="/chat/${res.ipfs}">${res.name}</a></li>`)
                 }});
             }
             /* document.getElementById("bttnSubmit").addEventListener('click', (e) => {
