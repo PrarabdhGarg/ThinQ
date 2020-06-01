@@ -51,4 +51,7 @@ app.listen(3001, () => {
     global.MessageQueue.sync({force: true}).then(() => {
         console.log('Message Queue Table created')
     })
+    global.addressRecord.sync({force:false}).then(() => {
+        console.log("Address Table Created")
+    })
 })

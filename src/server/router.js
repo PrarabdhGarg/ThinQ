@@ -10,6 +10,16 @@ router.get('/chat/:recip' , function(req , res) {
     res.render('chat')
 })
 
+router.post('/addAddreess', function(req, res) {
+    console.log('Entered POST route')
+    models.addressRecord.create({ipfs: req.body.ipfs, name: req.body.name}).then((addressRecord) => {
+        console.log("Address added to database")
+        res.render('addressbook')
+    }).catch((error) => {
+        console.log(error)
+    })
+})
+
 router.post('/insertrecord', function(req, res) {
     models.chatRecord.create({ sender: req.body.sender, message: req.body.message,recipient:req.body.reciver }).then(function(chatrecord) {
         console.log("Record inserted in db");

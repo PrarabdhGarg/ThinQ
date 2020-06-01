@@ -25,7 +25,22 @@
                 type="text"
                 required
              >
-            <input type="submit" value="Add">
+            <input type="button" id="bttnSubmit" value="Add" onclick="function1()">
         </form>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            function function1() {
+                console.log("function called")
+                $.ajax({url: "http://localhost:3001/addAddreess", type:'POST', async: true, data: {
+                    ipfs: document.getElementById('login').elements[1].value,
+                    name: document.getElementById('login').elements[0].value
+                } ,success: function(result){
+                    console.log('Request executed sucessfully')
+                }});
+            }
+            /* document.getElementById("bttnSubmit").addEventListener('click', (e) => {
+                
+            }) */
+        </script>
     </body>
 </html>
