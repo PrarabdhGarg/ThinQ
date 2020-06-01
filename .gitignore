@@ -1,2 +1,3 @@
 node_modules
-/src/server/ipfs
+src/server/ipfs
+database.sqlite3
