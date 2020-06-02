@@ -6,7 +6,7 @@ IPFS is used to handle the data transport between users.
 - Web Browser
 --------
 ### Getting started
-- Clone the repository
+- Clone the trial branch of repository
 - cd to the folder where you have cloned the repository
 - Run the following commands
 ```
@@ -14,7 +14,7 @@ npm install
 npm run compile
 npm run start
 ```
-- By default, the application would be hosted on port 3000. To access the app, visit [localhost:3000/](http://localhost:3000/) in your browser
+- By default, the application would be hosted on port 3001. To access the app, visit [localhost:3001/](http://localhost:3001/) in your browser
 ---------
 
 ### TODO
