@@ -1,11 +1,7 @@
 var models  = require('../../models');
 const express = require('express');
 var router = express.Router();
-<<<<<<< HEAD
 const Sequelize = require('sequelize')
-=======
-const Op = Sequelize.Op
->>>>>>> 038234e66e6eb31aa2352ec6c14986ec71aad86b
 
 router.get('/' , function(req, res) {
     res.render('addressbook')
@@ -53,6 +49,8 @@ router.get('/getRecord/:recip', function(req, res) {
             }
         }
         res.json(messages)
+    })
+})
 
 
 router.get('/getqueue', function(req, res) {
