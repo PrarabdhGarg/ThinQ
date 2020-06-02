@@ -7,6 +7,8 @@ const cors = require('cors')
 const IPFS = require('ipfs')
 const router = require('./router')
 const ROOM = require('ipfs-pubsub-room')
+const http = require('http')
+const io = require('socket.io')
 
 let ipfs
 let room
@@ -16,8 +18,17 @@ app.use(bodyParser.json())
 app.use(cors())
 app.set('view engine', 'ejs')
 app.use("/", router)
+app.use(express.static('public'))
 
-app.listen(3001, () => {
+let server = http.createServer(app)
+
+let socket = io.listen(server)
+socket.on('connection' , ()=>{
+    console.log('connected')
+})
+
+
+server.listen(3001, () => {
     ipfs = new IPFS({
         repo: path.join(__dirname , 'ipfs/thinq/'),
         init: true,
