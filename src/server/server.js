@@ -47,7 +47,7 @@ io.on('connection' , (soc)=>{
                 // models.chatRecord.create({sender:info.id , message: res.message , recipient: recip})
                 let hash
                 documentPath = path.join(__dirname , 'ipfs/thinq/messages/')
-                documentPath = path.join(documentPath, decodedMessage.recipient + 'sent/' + dateTime + '.txt')
+                documentPath = path.join(documentPath, recip + 'sent/' + dateTime + '.txt')
                 ipfs.files.write(documentPath, Buffer.from(res.message), {
                     create: true,
                     parents: true
