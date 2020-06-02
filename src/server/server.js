@@ -9,7 +9,7 @@ const router = require('./router')
 const ROOM = require('ipfs-pubsub-room')
 const http = require('http')
 const gdf = require('./gdf')
-var models  = require('../../models');
+const recordChat = require('./record_chat')
 
 
 let ipfs , room , recip , socket
@@ -46,7 +46,8 @@ io.on('connection' , (soc)=>{
             {   
                 // models.chatRecord.create({sender:info.id , message: res.message , recipient: recip})
                 let hash
-                documentPath = '/messages/' + info.id + res.message +recip + '.txt'
+                documentPath = path.join(__dirname , 'ipfs/thinq/messages/')
+                documentPath = path.join(documentPath, decodedMessage.recipient + 'sent/' + dateTime + '.txt')
                 ipfs.files.write(documentPath, Buffer.from(res.message), {
                     create: true,
                     parents: true
@@ -75,7 +76,7 @@ io.on('connection' , (soc)=>{
             else
             {
                 models.messageQueue.create({sender:info.id , message: res.message , recipient: recip})
-            } 
+            }
         })
     })
 })
