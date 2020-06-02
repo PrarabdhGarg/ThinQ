@@ -1,6 +1,7 @@
 var models  = require('../../models');
 const express = require('express');
 var router = express.Router();
+const Sequelize = require('sequelize')
 
 router.get('/' , function(req, res) {
     res.render('addressbook')
@@ -28,27 +29,26 @@ router.post('/addAddreess', function(req, res) {
     })
 })
 
-router.post('/insertrecord', function(req, res) {
-    models.chatRecord.create({ sender: req.body.sender, message: req.body.message,recipient:req.body.reciver }).then(function(chatrecord) {
-        console.log("Record inserted in db");
-        res.json(chatrecord);
-      }).catch((error) => {
-        console.error(error)
-    })
-});
-
 router.post('/insertqueue', function(req, res) {
     models.messageQueue.create({ sender: req.body.sender, message: req.body.message,recipient:req.body.reciver }).then(function(messagequeue) {
         console.log("Record inserted in queue");
         res.json(messagequeue);
       }).catch((error) => {
-        console.error(error)
+        res.json(new Object())
     })
 });
 
-router.get('/getrecord/:recip', function(req, res) {
-    models.chatRecord.findAll({ where: { [Op.or]: [{recipient: req.params.recip} , {sender: req.params.recip}] } }).then(function(chats) {
-        res.json(chats);
+router.get('/getRecord/:recip', function(req, res) {
+    models.chatRecord.findAll({ where: Sequelize.or({recipient: req.params.recip} , {sender: req.params.recip})}).then(function(chats) {
+        let messages = {}
+        let count = 0
+        for(chat of chats){
+            messages[count++] = {
+                sender : chat.dataValues.sender ,
+                message : chat.dataValues.message
+            }
+        }
+        res.json(messages)
       }).catch((error) => {
         console.error(error)
     })

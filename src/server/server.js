@@ -8,10 +8,12 @@ const IPFS = require('ipfs')
 const router = require('./router')
 const ROOM = require('ipfs-pubsub-room')
 const http = require('http')
-const io = require('socket.io')
+const gdf = require('./gdf')
+var models  = require('../../models');
 
-let ipfs
-let room
+
+let ipfs , room , recip , socket
+let connected = false
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -22,11 +24,28 @@ app.use(express.static('public'))
 
 let server = http.createServer(app)
 
-let socket = io.listen(server)
-socket.on('connection' , ()=>{
-    console.log('connected')
-})
+const io = require('socket.io')(server)
 
+io.on('connection' , (soc)=>{
+    socket = soc
+    connected = true;
+    socket.on('disconnect' , ()=>{connected = false})
+    socket.on('recipid' , (message)=>{
+        models.addressRecord.findOne({where : {ipfs : message.recip}}).then((res)=>{
+            recip = message.recip
+            socket.emit('initinfo' , {
+                name : res.dataValues.name ,
+                ipfs : res.dataValues.ipfs , 
+                online : room.hasPeer(res.dataValues.ipfs)
+            })
+        })
+    })
+    socket.on('sendMessage' , (res)=>{
+        ipfs.id((err , info)=>{
+            models.chatRecord.create({sender:info.id , message: res.message , recipient: recip})
+        })
+    })
+})
 
 server.listen(3001, () => {
     ipfs = new IPFS({
@@ -48,6 +67,17 @@ server.listen(3001, () => {
         if (err) { throw err }
         console.log('IPFS node ready with address ' + info.id)
         room = ROOM(ipfs, "ThinQInformationRoom")
+
+        room.on('peer joined' , (cid)=>{
+            if(connected && recip == cid)
+                socket.emit('ostat' , {online:true})
+        })
+
+        room.on('peer left' , (cid)=>{
+            if(connected && recip == cid)
+                socket.emit('ostat' , {online:false})
+        })
+
       })
     )
 
@@ -56,7 +86,7 @@ server.listen(3001, () => {
         dialect: 'sqlite',
         storage:'/databases/messages.db'
     })
-    global.ChatRecord.sync({force: true}).then(() => {
+    global.ChatRecord.sync({force: false}).then(() => {
         console.log('Message Record table created')
     })
     global.MessageQueue.sync({force: true}).then(() => {

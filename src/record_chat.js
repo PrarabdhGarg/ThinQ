@@ -1,5 +1,5 @@
 const database = require('./database')
-const gdf = require('./gdf')
+const gdf = require('./server/gdf')
 
 //stores new message in gdf format
 async function recordChatMessage(ipfs, roomId, message) {

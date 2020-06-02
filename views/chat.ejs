@@ -7,18 +7,36 @@
     </head>
     <body>
         <script>
+            let initinfo
             let socket = io('http://localhost:3001')
             socket.on('connect' , ()=>{
                 recip = window.location.pathname.split('/')[2]
                 socket.emit('recipid' , {recip:recip} , ()=>{console.log('here')})
             })
+
+            socket.on('initinfo' , (message)=>{
+                $("#hname").html(message.name)
+                initinfo = message
+                $.ajax({url: `http://localhost:3001/getRecord/${window.location.pathname.split('/')[2]}` , type:"GET" , async: false , contentType:"JSON" , success: function(res){
+                    for(id of Object.keys(res))
+                        $("#inbox").append(`<li>${initinfo.ipfs==res[id].sender? initinfo.name : "YOU"}: ${res[id].message}</li>`)
+                }})
+                if(message.online)
+                    $("#ostat").html("online")
+            })
+
+            socket.on('ostat' , (message)=>{
+                if(message.online)
+                    $("#ostat").html("online")
+                else
+                    $("#ostat").html("offline")
+            })
         </script>
-        <h2>Recipient Name</h2>
-        Online Status
+        <h2 id="hname"></h2>
+        <span id="ostat">offline</span>
         <hr>
         <ul id="inbox" style="list-style-type:none;">
-            <li>Sender1: Message1</li>
-            <li>Sender2: Message2</li>
+
         </ul>
         <hr>
         <form id="login">
@@ -29,8 +47,18 @@
             type="text"
             required
         >
-        <input type="submit" value="Send">
+        <input type="button" id="bttnSubmit" value="Send" onclick="function1()">
         </form>
+        <script>
+
+            function function1() {
+                socket.emit('sendMessage' , {
+                    message : $('#message').val()
+                })
+                $("#inbox").append(`YOU: ${$('#message').val()}`)
+                $('#message').val('')
+            }
+        </script>
         <hr>
         <a href='/'>Address Book</a>
     </body>
