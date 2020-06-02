@@ -111,6 +111,16 @@ server.listen(3001, () => {
                 socket.emit('ostat' , {online:false})
         })
 
+        room.on('message' , (message)=>{
+            let tmsg = gdf.gdf_decode(message.data.toString())
+            models.chatRecord.create({sender: tmsg.sender , message: tmsg.message , recipient: tmsg.recipient})
+            if(connected && recip == tmsg.sender)
+                socket.emit('receiveMessage' , {
+                    sender: tmsg.sender ,
+                    message: tmsg.recipient
+                })
+        })
+
       })
     )
 

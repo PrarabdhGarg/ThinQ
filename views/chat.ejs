@@ -31,6 +31,10 @@
                 else
                     $("#ostat").html("offline")
             })
+
+            socket.on('receiveMessage' , (message)=>{
+                $("#inbox").append(`<li>${initinfo.ipfs==message.sender? initinfo.name : "YOU"}: ${message.message}</li>`)
+            })
         </script>
         <h2 id="hname"></h2>
         <span id="ostat">offline</span>
