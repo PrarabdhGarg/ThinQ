@@ -17,7 +17,7 @@
             socket.on('initinfo' , (message)=>{
                 $("#hname").html(message.name)
                 initinfo = message
-                $.ajax({url: `http://localhost:3001/getRecord/${window.location.pathname.split('/')[2]}` , type:"GET" , async: false , contentType:"JSON" , success: function(res){
+                $.ajax({url: `http://localhost:3001/getRecord/${window.location.pathname.split('/')[2]}` , type:"GET" , async: true , contentType:"JSON" , success: function(res){
                     for(id of Object.keys(res))
                         $("#inbox").append(`<li>${initinfo.ipfs==res[id].sender? initinfo.name : "YOU"}: ${res[id].message}</li>`)
                 }})
@@ -40,7 +40,6 @@
         <span id="ostat">offline</span>
         <hr>
         <ul id="inbox" style="list-style-type:none;">
-
         </ul>
         <hr>
         <form id="login">
@@ -51,11 +50,13 @@
             type="text"
             required
         >
-        <input type="button" id="bttnSubmit" value="Send" onclick="function1()">
         </form>
+        <button id="bttnSubmit" onclick="function1()">Send</button>
         <script>
-
             function function1() {
+                console.log("Here")
+                if(!$('#message').val())
+                    return
                 socket.emit('sendMessage' , {
                     message : $('#message').val()
                 })
