@@ -9,7 +9,7 @@ const router = require('./router')
 const ROOM = require('ipfs-pubsub-room')
 const http = require('http')
 const gdf = require('./gdf')
-var models  = require('../../models');
+const recordChat = require('./record_chat')
 
 
 let ipfs , room , recip , socket
@@ -41,8 +41,9 @@ io.on('connection' , (soc)=>{
         })
     })
     socket.on('sendMessage' , (res)=>{
-        ipfs.id((err , info)=>{
-            models.chatRecord.create({sender:info.id , message: res.message , recipient: recip})
+        ipfs.id(async (err , info)=>{
+            fileHash = await recordChat.recordChatMessage(ipfs=ipfs, message=gdf.gdf_encode(res.message, info.id, recip), sent=true)
+            console.log('Hash returned to server = ' + fileHash)
         })
     })
 })
