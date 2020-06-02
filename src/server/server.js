@@ -10,9 +10,10 @@ const ROOM = require('ipfs-pubsub-room')
 const http = require('http')
 const gdf = require('./gdf')
 const recordChat = require('./record_chat')
+var models  = require('../../models');
 
 
-let ipfs , room , recip , socket
+var ipfs , room , recip , socket
 let connected = false
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -21,6 +22,34 @@ app.use(cors())
 app.set('view engine', 'ejs')
 app.use("/", router)
 app.use(express.static('public'))
+
+app.get('/getRecord/:recip', function(req, res) {
+    models.chatRecord.findAll({ where: Sequelize.or({recipient: req.params.recip} , {sender: req.params.recip})}).then(function(chats) {
+        if(chats.length == 0)
+        {
+            res.json(new Object())
+            return
+        }
+        let messages = {}
+        let promises = []
+        let count = 0
+        for(chat of chats){
+            messages[count++] = {
+                sender : chat.dataValues.sender
+            }
+            try {
+                promises.push(ipfs.files.read(`/ipfs/${chat.dataValues.message}`))
+            } catch(e) {
+                console.log(e.toString())
+            }
+        }
+        Promise.all(promises).then((results)=>{
+            for(let i=0 ; i<count ; i++)
+                messages[i].message = results[i].toString()
+            res.json(messages)
+        })
+    })
+})
 
 let server = http.createServer(app)
 
@@ -41,42 +70,32 @@ io.on('connection' , (soc)=>{
         })
     })
     socket.on('sendMessage' , (res)=>{
-        ipfs.id((err , info)=>{
-            if(room.hasPeer(recip))
-            {   
-                // models.chatRecord.create({sender:info.id , message: res.message , recipient: recip})
-                let hash
-                documentPath = path.join(__dirname , 'ipfs/thinq/messages/')
-                documentPath = path.join(documentPath, recip + 'sent/' + dateTime + '.txt')
-                ipfs.files.write(documentPath, Buffer.from(res.message), {
-                    create: true,
-                    parents: true
-                }, (err, resp) => {
-                    if(err) {
-                        console.log("Error in inserting message " + err.message)
-                    } else {
-                        ipfs.files.stat(documentPath, (err, respon) => {
-                            if(err) {
-                                console.log("Error in inserting message " + err.message)
-                            }
-                            console.log('Stat Result = ' + JSON.stringify(respon))
-                            hash = respon.hash
-                            console.log('File Hash = ' + hash)
-                        })
-                    }
-                })
-                // ipfs.files.write(Buffer.from(new Buffer(res.message))).then((res)=>{
-                //     hash=res.cid
-                //     console.log("File added at hash:"+hash.toString())
-                // })
-                models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip})
-                mes=gdf.gdf_encode(hash.toString(),info.id, recip)
-                room.sendTo(recip,mes)
-            }
-            else
-            {
-                models.messageQueue.create({sender:info.id , message: res.message , recipient: recip})
-            }
+        ipfs.id((err , info)=>{  
+            let hash
+            documentPath = path.join(__dirname , 'ipfs/thinq/messages/')
+            documentPath = path.join(documentPath, recip + 'sent/' + Date.now() + '.txt')
+            ipfs.files.write(documentPath, Buffer.from(res.message), {
+                create: true,
+                parents: true
+            }, (err, resp) => {
+                if(err) {
+                    console.log("Error in inserting message " + err.message)
+                } else {
+                    ipfs.files.stat(documentPath, (err, respon) => {
+                        if(err) {
+                            console.log("Error in inserting message " + err.message)
+                        }
+                        console.log('Stat Result = ' + JSON.stringify(respon))
+                        hash = respon.hash
+                        console.log('File Hash = ' + hash)
+                        models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip})
+                        mes=gdf.gdf_encode(hash.toString(),info.id, recip)
+                        room.sendTo(recip,mes)
+                        if(!room.hasPeer(recip))
+                            models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip})
+                    })
+                }
+            })
         })
     })
 })
@@ -110,6 +129,24 @@ server.listen(3001, () => {
         room.on('peer left' , (cid)=>{
             if(connected && recip == cid)
                 socket.emit('ostat' , {online:false})
+        })
+
+        room.on('message' , (message)=>{
+            let tmsg = gdf.gdf_decode(message.data.toString())
+            models.chatRecord.create({sender: tmsg.sender , message: tmsg.message , recipient: tmsg.recipient})
+            if(connected && recip == tmsg.sender)
+            {
+                try {
+                    ipfs.files.read(`/ipfs/${tmsg.message}`).then((res)=>{
+                        socket.emit('receiveMessage' , {
+                            sender: tmsg.sender ,
+                            message: res.toString()
+                        })
+                    })
+                } catch(e) {
+                    console.log(e.toString())
+                }
+            }   
         })
 
       })

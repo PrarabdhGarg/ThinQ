@@ -1,4 +1,5 @@
 var models  = require('../../models');
+const server = require('./server')
 const express = require('express');
 var router = express.Router();
 const Sequelize = require('sequelize')
@@ -37,21 +38,6 @@ router.post('/insertqueue', function(req, res) {
         res.json(new Object())
     })
 });
-
-router.get('/getRecord/:recip', function(req, res) {
-    models.chatRecord.findAll({ where: Sequelize.or({recipient: req.params.recip} , {sender: req.params.recip})}).then(function(chats) {
-        let messages = {}
-        let count = 0
-        for(chat of chats){
-            messages[count++] = {
-                sender : chat.dataValues.sender ,
-                message : chat.dataValues.message
-            }
-        }
-        res.json(messages)
-    })
-})
-
 
 router.get('/getqueue', function(req, res) {
     models.messageQueue.findAll().then(function(messageQueues) {
