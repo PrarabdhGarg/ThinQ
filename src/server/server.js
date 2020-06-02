@@ -41,9 +41,42 @@ io.on('connection' , (soc)=>{
         })
     })
     socket.on('sendMessage' , (res)=>{
-        ipfs.id(async (err , info)=>{
-            fileHash = await recordChat.recordChatMessage(ipfs=ipfs, message=gdf.gdf_encode(res.message, info.id, recip), sent=true)
-            console.log('Hash returned to server = ' + fileHash)
+        ipfs.id((err , info)=>{
+            if(room.hasPeer(recip))
+            {   
+                // models.chatRecord.create({sender:info.id , message: res.message , recipient: recip})
+                let hash
+                documentPath = path.join(__dirname , 'ipfs/thinq/messages/')
+                documentPath = path.join(documentPath, decodedMessage.recipient + 'sent/' + dateTime + '.txt')
+                ipfs.files.write(documentPath, Buffer.from(res.message), {
+                    create: true,
+                    parents: true
+                }, (err, resp) => {
+                    if(err) {
+                        console.log("Error in inserting message " + err.message)
+                    } else {
+                        ipfs.files.stat(documentPath, (err, respon) => {
+                            if(err) {
+                                console.log("Error in inserting message " + err.message)
+                            }
+                            console.log('Stat Result = ' + JSON.stringify(respon))
+                            hash = respon.hash
+                            console.log('File Hash = ' + hash)
+                        })
+                    }
+                })
+                // ipfs.files.write(Buffer.from(new Buffer(res.message))).then((res)=>{
+                //     hash=res.cid
+                //     console.log("File added at hash:"+hash.toString())
+                // })
+                models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip})
+                mes=gdf.gdf_encode(hash.toString(),info.id, recip)
+                room.sendTo(recip,mes)
+            }
+            else
+            {
+                models.messageQueue.create({sender:info.id , message: res.message , recipient: recip})
+            }
         })
     })
 })
