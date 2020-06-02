@@ -1,6 +1,7 @@
 var models  = require('../../models');
 const express = require('express');
 var router = express.Router();
+const Op = Sequelize.Op
 
 router.get('/' , function(req, res) {
     res.render('addressbook')
@@ -47,7 +48,7 @@ router.post('/insertqueue', function(req, res) {
 });
 
 router.get('/getrecord/:recip', function(req, res) {
-    models.chatRecord.findAll({ where: { [Op.or]: [{recipient: req.params.recip} , {sender: req.params.recip}] } }).then(function(chats) {
+    models.chatRecord.findAll({ where: { [Op.and]: [{recipient: req.params.recip} , {sender: req.params.recip}] } }).then(function(chats) {
         res.json(chats);
       }).catch((error) => {
         console.error(error)
