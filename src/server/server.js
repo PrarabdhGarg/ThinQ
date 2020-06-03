@@ -90,8 +90,9 @@ io.on('connection' , (soc)=>{
                         console.log('File Hash = ' + hash)
                         models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip})
                         mes=gdf.gdf_encode(hash.toString(),info.id, recip)
-                        room.sendTo(recip,mes)
-                        if(!room.hasPeer(recip))
+                        if(room.hasPeer(recip))
+                            room.sendTo(recip,mes)
+                        else
                             models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip})
                     })
                 }
@@ -124,6 +125,15 @@ server.listen(3001, () => {
         room.on('peer joined' , (cid)=>{
             if(connected && recip == cid)
                 socket.emit('ostat' , {online:true})
+            queuedMessages = models.messageQueue.findAll({
+                where: {
+                    recipient: cid
+                }
+            })
+            for (let message of queuedMessages) {
+                encodedMessage = gdf.gdf_encode(message, info.id. cid)
+                room.sendTo(cid, encodedMessage)
+            }
         })
 
         room.on('peer left' , (cid)=>{
@@ -146,7 +156,7 @@ server.listen(3001, () => {
                 } catch(e) {
                     console.log(e.toString())
                 }
-            }   
+            } 
         })
 
       })
