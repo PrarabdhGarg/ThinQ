@@ -4,10 +4,6 @@ const express = require('express');
 var router = express.Router();
 const Sequelize = require('sequelize')
 
-router.get('/' , function(req, res) {
-    res.render('addressbook')
-})
-
 router.get('/chat/:recip' , function(req , res) {
     res.render('chat')
 })

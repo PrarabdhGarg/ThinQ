@@ -25,6 +25,8 @@
              >
             <input type="button" id="bttnSubmit" value="Add" onclick="function1()">
         </form>
+        <hr>
+        <div>Your NodeId: <%=ipfsid%></div>
         <script>
 
             $.ajax({url: "http://localhost:3001/getAddress" , type:"GET" , async: false , contentType:"JSON" , success: function(res){
