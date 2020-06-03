@@ -2,7 +2,7 @@ const html = require('choo/html')
 const gdf = require('./server/gdf')
 const addressBook = require('./addressbook')
 const ROOM = require('ipfs-pubsub-room')
-const recordChat = require('./record_chat')
+const recordChat = require('./server/record_chat')
 
 function mainView(state, emit) {
     let messages = state.messages

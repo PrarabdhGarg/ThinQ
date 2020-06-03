@@ -76,6 +76,36 @@ io.on('connection' , (soc)=>{
             })
         })
     })
+    socket.on('sendFile' , (res)=>{
+        ipfs.id((err , info)=>{  
+            let hash
+            documentPath = path.join(__dirname , 'ipfs/thinq/files/')
+            documentPath = path.join(documentPath, recip + 'sent/' + Date.now() + '.jpeg')
+            ipfs.files.write(documentPath, Buffer.from(res.file), {
+                create: true,
+                parents: true
+            }, (err, resp) => {
+                if(err) {
+                    console.log("Error in inserting image " + err.message)
+                } else {
+                    ipfs.files.stat(documentPath, (err, respon) => {
+                        if(err) {
+                            console.log("Error in inserting image" + err.message)
+                        }
+                        console.log('Stat Result = ' + JSON.stringify(respon))
+                        hash = respon.hash
+                        console.log('File Hash = ' + hash)
+                        models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip})
+                        mes=gdf.gdf_encode(hash.toString(),info.id, recip)
+                        if(room.hasPeer(recip))
+                            room.sendTo(recip,mes)
+                        else
+                            models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip})
+                    })
+                }
+            })
+        })
+    })
 })
 
 server.listen(3001, () => {
