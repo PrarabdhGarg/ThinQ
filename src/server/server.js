@@ -125,15 +125,24 @@ server.listen(3001, () => {
         room.on('peer joined' , (cid)=>{
             if(connected && recip == cid)
                 socket.emit('ostat' , {online:true})
-            queuedMessages = models.messageQueue.findAll({
+            models.messageQueue.findAll({
                 where: {
                     recipient: cid
                 }
+            }).then((res) => {
+                console.log("List of messages = " + JSON.stringify(res))
+                if(res.length != 0) {
+                    for (let message of res) {
+                        encodedMessage = gdf.gdf_encode(message.message, message.sender, message.recipient)
+                        room.sendTo(cid, encodedMessage)
+                        models.messageQueue.destroy({
+                            where: {
+                                id: message.id
+                            }
+                        })
+                    }
+                }
             })
-            for (let message of queuedMessages) {
-                encodedMessage = gdf.gdf_encode(message, info.id. cid)
-                room.sendTo(cid, encodedMessage)
-            }
         })
 
         room.on('peer left' , (cid)=>{
@@ -170,7 +179,7 @@ server.listen(3001, () => {
     global.ChatRecord.sync({force: false}).then(() => {
         console.log('Message Record table created')
     })
-    global.MessageQueue.sync({force: true}).then(() => {
+    global.MessageQueue.sync({force: false}).then(() => {
         console.log('Message Queue Table created')
     })
     global.addressRecord.sync({force:false}).then(() => {
