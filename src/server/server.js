@@ -27,34 +27,6 @@ app.get('/' , function(req, res) {
     res.render('addressbook' , {ipfsid : ipfsid})
 })
 
-app.get('/getRecord/:recip', function(req, res) {
-    models.chatRecord.findAll({ where: Sequelize.or({recipient: req.params.recip} , {sender: req.params.recip})}).then(function(chats) {
-        if(chats.length == 0)
-        {
-            res.json(new Object())
-            return
-        }
-        let messages = {}
-        let promises = []
-        let count = 0
-        for(chat of chats){
-            messages[count++] = {
-                sender : chat.dataValues.sender
-            }
-            try {
-                promises.push(ipfs.files.read(`/ipfs/${chat.dataValues.message}`))
-            } catch(e) {
-                console.log(e.toString())
-            }
-        }
-        Promise.all(promises).then((results)=>{
-            for(let i=0 ; i<count ; i++)
-                messages[i].message = results[i].toString()
-            res.json(messages)
-        })
-    })
-})
-
 let server = http.createServer(app)
 
 const io = require('socket.io')(server)
@@ -123,6 +95,8 @@ server.listen(3001, () => {
 
     ipfs.once('ready', () => ipfs.id((err, info) => {
         if (err) { throw err }
+        global.ipfs = ipfs
+        console.log('IPFS node ready with address ' + info.id)
         console.log('Server Ready.................................\nIPFS node ready with address ' + info.id)
         room = ROOM(ipfs, "ThinQInformationRoom")
 
