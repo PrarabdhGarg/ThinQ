@@ -13,7 +13,7 @@ const recordChat = require('./record_chat')
 var models  = require('../../models');
 
 
-var ipfs , room , recip , socket
+var ipfs , room , recip , socket , ipfsid
 let connected = false
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -22,6 +22,11 @@ app.use(cors())
 app.set('view engine', 'ejs')
 app.use("/", router)
 app.use(express.static('public'))
+
+app.get('/' , function(req, res) {
+
+    res.render('addressbook' , {ipfsid : ipfsid})
+})
 
 app.get('/getRecord/:recip', function(req, res) {
     models.chatRecord.findAll({ where: Sequelize.or({recipient: req.params.recip} , {sender: req.params.recip})}).then(function(chats) {
@@ -119,8 +124,10 @@ server.listen(3001, () => {
 
     ipfs.once('ready', () => ipfs.id((err, info) => {
         if (err) { throw err }
-        console.log('IPFS node ready with address ' + info.id)
+        console.log('Server Ready.................................\nIPFS node ready with address ' + info.id)
         room = ROOM(ipfs, "ThinQInformationRoom")
+
+        ipfsid = info.id
 
         room.on('peer joined' , (cid)=>{
             if(connected && recip == cid)
@@ -171,7 +178,6 @@ server.listen(3001, () => {
       })
     )
 
-    console.log('Database Server started at port 3001!!!')
     var sequelize = new Sequelize({
         dialect: 'sqlite',
         storage:'/databases/messages.db'
@@ -186,3 +192,5 @@ server.listen(3001, () => {
         console.log("Address Table Created")
     })
 })
+
+module.exports = {ipfsid : ipfsid}
