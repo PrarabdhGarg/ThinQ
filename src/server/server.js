@@ -65,12 +65,12 @@ io.on('connection' , (soc)=>{
                         console.log('Stat Result = ' + JSON.stringify(respon))
                         hash = respon.hash
                         console.log('File Hash = ' + hash)
-                        models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip})
+                        models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"Message"})
                         mes=gdf.gdf_encode(hash.toString(),info.id, recip)
                         if(room.hasPeer(recip))
                             room.sendTo(recip,mes)
                         else
-                            models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip})
+                            models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"Message"})
                     })
                 }
             })
@@ -95,13 +95,14 @@ io.on('connection' , (soc)=>{
                         console.log('Stat Result = ' + JSON.stringify(respon))
                         hash = respon.hash
                         console.log('File Hash = ' + hash)
-                        models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip})
+                        models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip ,classifier:"Image"})
                         mes=gdf.gdf_encode(hash.toString(),info.id, recip)
                         if(room.hasPeer(recip))
                             room.sendTo(recip,mes)
                         else
-                            models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip})
+                            models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"Image"})
                     })
+                    socket.emit('renderimage', { source : res.src });
                 }
             })
         })
@@ -163,7 +164,7 @@ server.listen(3001, () => {
 
         room.on('message' , (message)=>{
             let tmsg = gdf.gdf_decode(message.data.toString())
-            models.chatRecord.create({sender: tmsg.sender , message: tmsg.message , recipient: tmsg.recipient})
+            models.chatRecord.create({sender: tmsg.sender , message: tmsg.message , recipient: tmsg.recipient,classifier:"Message"})
             if(connected && recip == tmsg.sender)
             {
                 try {

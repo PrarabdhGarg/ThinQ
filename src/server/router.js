@@ -55,7 +55,7 @@ router.post('/addAddreess', function(req, res) {
 })
 
 router.post('/insertqueue', function(req, res) {
-    models.messageQueue.create({ sender: req.body.sender, message: req.body.message,recipient:req.body.reciver }).then(function(messagequeue) {
+    models.messageQueue.create({ sender: req.body.sender, message: req.body.message,recipient:req.body.reciver,classifier:"Message"}).then(function(messagequeue) {
         console.log("Record inserted in queue");
         res.json(messagequeue);
       }).catch((error) => {

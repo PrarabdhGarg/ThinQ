@@ -36,6 +36,14 @@
             socket.on('receiveMessage' , (message)=>{
                 $("#inbox").append(`<li>${initinfo.ipfs==message.sender? initinfo.name : "YOU"}: ${message.message}</li>`)
             })
+
+            socket.on('renderimage', image);
+
+            function image (source) {
+                console.log('File name is :',source)
+            $('#inbox').append(`<li>${"YOU"}: ${'<img src= "' + source.source + '" width="100" height="100" alt="Red dot" />'}</li>`)
+
+            }
         </script>
         <h2 id="hname"></h2>
         <span id="ostat">offline</span>
@@ -75,14 +83,17 @@
             <script type="text/javascript">
             function upload() {
               const reader = new FileReader();
+              const reader1=new FileReader();
               reader.onloadend = function() {
                 // const buf = new Buffer()
                 // image=buf.from(reader.result) // Convert data into buffer
                 socket.emit('sendFile' , {
-                    file : reader.result
+                    file : reader.result,
+                    src  : reader1.result
                 })    
               }
               const photo = document.getElementById("photo");
+              reader1.readAsDataURL(photo.files[0])
               reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
             }
         </script>
