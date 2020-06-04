@@ -96,7 +96,7 @@ io.on('connection' , (soc)=>{
                         hash = respon.hash
                         console.log('File Hash = ' + hash)
                         models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip ,classifier:"Image"})
-                        mes=gdf.gdf_encode(hash.toString(),info.id, recip)
+                        mes=gdf.gdf_encode(hash.toString(),info.id, recip, "Image")
                         if(room.hasPeer(recip))
                             room.sendTo(recip,mes)
                         else
