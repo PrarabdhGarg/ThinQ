@@ -8,6 +8,39 @@ router.get('/chat/:recip' , function(req , res) {
     res.render('chat')
 })
 
+// router.get('/getRecord/:recip', function(req, res) {
+//     models.chatRecord.findAll({ where: Sequelize.or({recipient: req.params.recip} , {sender: req.params.recip})}).then(function(chats) {
+//         if(chats.length == 0)
+//         {
+//             res.json(new Object())
+//             return
+//         }
+//         let messages = {}
+//         let promises = []
+//         let count = 0
+//         for(chat of chats){
+//             messages[count++] = {
+//                 sender : chat.dataValues.sender,
+//                 classifier:chat.dataValues.classifier
+//             }
+//             try {
+//                 promises.push(global.ipfs.files.read(`/ipfs/${chat.dataValues.message}`))
+//             } catch(e) {
+//                 console.log(e.toString())
+//             }
+//         }
+//         Promise.all(promises).then((results)=>{
+//             for(let i=0 ; i<count ; i++)
+//             {   
+//                 if(messages[i].classifier=="MESSAGE")
+//                 messages[i].message = results[i].toString()
+//                 else if(messages[i].classifier=="IMAGE")
+//                 message[i].message=results[i].toString("base64")
+//             }
+//             res.json(messages)
+//         })
+//     })
+// })
 router.get('/getRecord/:recip', function(req, res) {
     models.chatRecord.findAll({ where: Sequelize.or({recipient: req.params.recip} , {sender: req.params.recip})}).then(function(chats) {
         if(chats.length == 0)
@@ -55,7 +88,7 @@ router.post('/addAddreess', function(req, res) {
 })
 
 router.post('/insertqueue', function(req, res) {
-    models.messageQueue.create({ sender: req.body.sender, message: req.body.message,recipient:req.body.reciver,classifier:"Message"}).then(function(messagequeue) {
+    models.messageQueue.create({ sender: req.body.sender, message: req.body.message,recipient:req.body.reciver,classifier:"MESSAGE"}).then(function(messagequeue) {
         console.log("Record inserted in queue");
         res.json(messagequeue);
       }).catch((error) => {

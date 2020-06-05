@@ -65,12 +65,12 @@ io.on('connection' , (soc)=>{
                         console.log('Stat Result = ' + JSON.stringify(respon))
                         hash = respon.hash
                         console.log('File Hash = ' + hash)
-                        models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"Message"})
-                        mes=gdf.gdf_encode(hash.toString(),info.id, recip)
+                        models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"MESSAGE"})
+                        mes=gdf.gdf_encode(hash.toString(),info.id, recip, "Message")
                         if(room.hasPeer(recip))
                             room.sendTo(recip,mes)
                         else
-                            models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"Message"})
+                            models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"MESSAGE"})
                     })
                 }
             })
@@ -80,29 +80,29 @@ io.on('connection' , (soc)=>{
         ipfs.id((err , info)=>{  
             let hash
             documentPath = path.join(__dirname , 'ipfs/thinq/files/')
-            documentPath = path.join(documentPath, recip + 'sent/' + Date.now() + '.jpeg')
+            documentPath = path.join(documentPath, recip + 'sent/' + Date.now() + '.'+res.extension)
             ipfs.files.write(documentPath, Buffer.from(res.file), {
                 create: true,
                 parents: true
             }, (err, resp) => {
                 if(err) {
-                    console.log("Error in inserting image " + err.message)
+                    console.log("Error in inserting file " + err.message)
                 } else {
                     ipfs.files.stat(documentPath, (err, respon) => {
                         if(err) {
-                            console.log("Error in inserting image" + err.message)
+                            console.log("Error in inserting file" + err.message)
                         }
                         console.log('Stat Result = ' + JSON.stringify(respon))
                         hash = respon.hash
                         console.log('File Hash = ' + hash)
-                        models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip ,classifier:"Image"})
-                        mes=gdf.gdf_encode(hash.toString(),info.id, recip, "Image")
+                        models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip ,classifier:"IMAGE"})
+                        mes=gdf.gdf_encode(hash.toString(),info.id, recip, "IMAGE")
                         if(room.hasPeer(recip))
                             room.sendTo(recip,mes)
                         else
-                            models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"Image"})
+                            models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"IMAGE"})
+                        socket.emit('renderimage', { link : hash.toString() });
                     })
-                    socket.emit('renderimage', { source : res.src });
                 }
             })
         })
@@ -145,7 +145,7 @@ server.listen(3001, () => {
                 console.log("List of messages = " + JSON.stringify(res))
                 if(res.length != 0) {
                     for (let message of res) {
-                        encodedMessage = gdf.gdf_encode(message.message, message.sender, message.recipient)
+                        encodedMessage = gdf.gdf_encode(message.message, message.sender, message.recipient,message.classifier)
                         room.sendTo(cid, encodedMessage)
                         models.messageQueue.destroy({
                             where: {
@@ -164,9 +164,12 @@ server.listen(3001, () => {
 
         room.on('message' , (message)=>{
             let tmsg = gdf.gdf_decode(message.data.toString())
-            models.chatRecord.create({sender: tmsg.sender , message: tmsg.message , recipient: tmsg.recipient,classifier:"Message"})
+            models.chatRecord.create({sender: tmsg.sender , message: tmsg.message , recipient: tmsg.recipient,classifier:tmsg.object_type})
             if(connected && recip == tmsg.sender)
             {
+                if(tmsg.object_type=="MESSAGE")
+                {
+                    console.log("Message condition")
                 try {
                     ipfs.files.read(`/ipfs/${tmsg.message}`).then((res)=>{
                         socket.emit('receiveMessage' , {
@@ -177,7 +180,27 @@ server.listen(3001, () => {
                 } catch(e) {
                     console.log(e.toString())
                 }
-            } 
+                }
+              else if(tmsg.object_type=="IMAGE")
+              { 
+                console.log("Image condition")
+                try 
+                {
+                    ipfs.files.read(`/ipfs/${tmsg.message}`).then((res)=>
+                    {
+                        socket.emit('receiveImage' , {
+                            sender: tmsg.sender ,
+                            filesrc: tmsg.message.toString()
+                        })
+                    })
+                } 
+                catch(e) 
+                {
+                    console.log(e.toString())
+                }
+                }          
+            
+              } 
         })
 
       })

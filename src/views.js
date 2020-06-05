@@ -31,7 +31,7 @@ function mainView(state, emit) {
             emit("render")
         })
         state.room.on('message', async (message) => {
-            recordChat.recordChatMessage(state.ipfs, `${participants[0]}||${participants[1]}`, message.data.toString())
+            recordChat.recordChatMessage(state.ipfs, `${participants[0]}||${participants[1]}`, message.data.toString(),"MESSAGE")
             state.messages.push(message.data.toString())
             emit("render")
         })
@@ -41,7 +41,7 @@ function mainView(state, emit) {
         e.preventDefault();
         let form = e.currentTarget
         let data = new FormData(form)
-        await recordChat.recordChatMessage(state.ipfs, `${participants[0]}||${participants[1]}`, gdf.gdf_encode(data.get('message'), state.userid, state.recipient))
+        await recordChat.recordChatMessage(state.ipfs, `${participants[0]}||${participants[1]}`, gdf.gdf_encode(data.get('message'), state.userid, state.recipient,"MESSAGE"))
         state.room.broadcast(gdf.gdf_encode(data.get("message") , state.userid , state.recipient))
     }
 

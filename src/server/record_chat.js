@@ -25,7 +25,7 @@ async function recordChatMessage(ipfs, message, sent = false) {
                 console.log('Stat Result = ' + JSON.stringify(res))
                 fileHash = res.hash
                 console.log('File Hash = ' + fileHash)
-                models.chatRecord.create({sender:info.id , message: res.message , recipient: recip,classifier:"Message"})
+                models.chatRecord.create({sender:info.id , message: res.message , recipient: recip,classifier:"MESSAGE"})
             })
         }
     })
