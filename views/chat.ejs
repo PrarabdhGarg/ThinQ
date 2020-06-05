@@ -22,10 +22,7 @@
                     console.log(res)
                     for(id of Object.keys(res))
                     {
-                        if(res[id].classifier=="MESSAGE")   
                         $("#inbox").append(`<li>${initinfo.ipfs==res[id].sender? initinfo.name : "YOU"}: ${res[id].message}</li>`)
-                        else if(res[id].classifier=="IMAGE")
-                        $('#inbox').append(`<li>${initinfo.ipfs==message.sender? initinfo.name : "YOU"}: ${'<img src= "' + res[id].message+ '" width="100" height="100" alt="Red dot" />'}</li>`)
                     }
                 }})
                 if(message.online)

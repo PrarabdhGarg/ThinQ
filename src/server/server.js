@@ -165,9 +165,10 @@ server.listen(3001, () => {
         room.on('message' , (message)=>{
             let tmsg = gdf.gdf_decode(message.data.toString())
             models.chatRecord.create({sender: tmsg.sender , message: tmsg.message , recipient: tmsg.recipient,classifier:tmsg.object_type})
+            console.log("Object type is:"+tmsg.object_type.toString())
             if(connected && recip == tmsg.sender)
             {
-                if(tmsg.object_type=="MESSAGE")
+                if(tmsg.object_type.toString()=="MESSAGE")
                 {
                     console.log("Message condition")
                 try {
@@ -181,7 +182,7 @@ server.listen(3001, () => {
                     console.log(e.toString())
                 }
                 }
-              else if(tmsg.object_type=="IMAGE")
+              else if(tmsg.object_type.toString()=="IMAGE")
               { 
                 console.log("Image condition")
                 try 
