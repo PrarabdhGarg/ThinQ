@@ -7,40 +7,6 @@ const Sequelize = require('sequelize')
 router.get('/chat/:recip' , function(req , res) {
     res.render('chat')
 })
-
-// router.get('/getRecord/:recip', function(req, res) {
-//     models.chatRecord.findAll({ where: Sequelize.or({recipient: req.params.recip} , {sender: req.params.recip})}).then(function(chats) {
-//         if(chats.length == 0)
-//         {
-//             res.json(new Object())
-//             return
-//         }
-//         let messages = {}
-//         let promises = []
-//         let count = 0
-//         for(chat of chats){
-//             messages[count++] = {
-//                 sender : chat.dataValues.sender,
-//                 classifier:chat.dataValues.classifier
-//             }
-//             try {
-//                 promises.push(global.ipfs.files.read(`/ipfs/${chat.dataValues.message}`))
-//             } catch(e) {
-//                 console.log(e.toString())
-//             }
-//         }
-//         Promise.all(promises).then((results)=>{
-//             for(let i=0 ; i<count ; i++)
-//             {   
-//                 if(messages[i].classifier=="MESSAGE")
-//                 messages[i].message = results[i].toString()
-//                 else if(messages[i].classifier=="IMAGE")
-//                 message[i].message=results[i].toString("base64")
-//             }
-//             res.json(messages)
-//         })
-//     })
-// })
 router.get('/getRecord/:recip', function(req, res) {
     models.chatRecord.findAll({ where: Sequelize.or({recipient: req.params.recip} , {sender: req.params.recip})}).then(function(chats) {
         if(chats.length == 0)
@@ -53,7 +19,9 @@ router.get('/getRecord/:recip', function(req, res) {
         let count = 0
         for(chat of chats){
             messages[count++] = {
-                sender : chat.dataValues.sender
+                sender : chat.dataValues.sender,
+                classifier:chat.dataValues.classifier,
+                hash:chat.dataValues.message
             }
             try {
                 promises.push(global.ipfs.files.read(`/ipfs/${chat.dataValues.message}`))
@@ -63,11 +31,44 @@ router.get('/getRecord/:recip', function(req, res) {
         }
         Promise.all(promises).then((results)=>{
             for(let i=0 ; i<count ; i++)
+            {
+                if(messages[i].classifier.toString()=="MESSAGE")
                 messages[i].message = results[i].toString()
+                else if(messages[i].classifier.toString()=="IMAGE")
+                messages[i].message = messages[i].hash
+            }
             res.json(messages)
         })
     })
 })
+// router.get('/getRecord/:recip', function(req, res) {
+//     models.chatRecord.findAll({ where: Sequelize.or({recipient: req.params.recip} , {sender: req.params.recip})}).then(function(chats) {
+//         if(chats.length == 0)
+//         {
+//             res.json(new Object())
+//             return
+//         }
+//         let messages = {}
+//         let promises = []
+//         let count = 0
+//         for(chat of chats){
+//             messages[count++] = {
+//                 sender : chat.dataValues.sender
+//             }
+//             try {
+//                 promises.push(global.ipfs.files.read(`/ipfs/${chat.dataValues.message}`))
+//             } catch(e) {
+//                 console.log(e.toString())
+//             }
+//         }
+//         Promise.all(promises).then((results)=>{
+//             for(let i=0 ; i<count ; i++)
+//                 messages[i].message = results[i].toString()
+//             res.json(messages)
+//         })
+//     })
+// })
+
 
 router.get('/getAddress' , function(req , res){
     models.addressRecord.findAll({}).then((result)=>{

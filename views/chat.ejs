@@ -21,8 +21,11 @@
                 $.ajax({url: `http://localhost:3001/getRecord/${window.location.pathname.split('/')[2]}` , type:"GET" , async: true , contentType:"JSON" , success: function(res){
                     console.log(res)
                     for(id of Object.keys(res))
-                    {
+                    {   
+                        if(res[id].classifier.toString()=="MESSAGE")
                         $("#inbox").append(`<li>${initinfo.ipfs==res[id].sender? initinfo.name : "YOU"}: ${res[id].message}</li>`)
+                        else
+                        $("#inbox").append(`<li>${initinfo.ipfs==message.sender? initinfo.name : "YOU"}: ${'<a href="https://ipfs.io/ipfs/' + res[id].message+'">'+'See File'+'</a>'}</li>`)
                     }
                 }})
                 if(message.online)
