@@ -69,9 +69,11 @@ io.on('connection' , (soc)=>{
                         mes=gdf.gdf_encode(hash.toString(),info.id, recip, "MESSAGE")
                         if(room.hasPeer(recip)) {
                             models.addressRecord.findOne({where : {ipfs : recip}}).then((res)=>{ 
-                                encryptedMessage = encryption.getEncryptedText(mes, res.dataValues.publicKey)
-                                console.log(encryptedMessage)
-                                room.sendTo(recip,encryptedMessage)
+                                console.log(JSON.stringify(res))
+                                encryption.getEncryptedText(mes, res.dataValues.publicKey).then((msg) => {
+                                    console.log(msg)
+                                    room.sendTo(recip,msg)
+                                })
                              })
                         }
                         else
@@ -230,7 +232,7 @@ server.listen(3001, () => {
     global.MessageQueue.sync({force: false}).then(() => {
         console.log('Message Queue Table created')
     })
-    global.addressRecord.sync({force:true}).then(() => {
+    global.addressRecord.sync({force:false}).then(() => {
         console.log("Address Table Created")
     })
 })

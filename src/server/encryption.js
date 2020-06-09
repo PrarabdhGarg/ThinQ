@@ -23,12 +23,20 @@ async function generateKeys() {
 }
 
 async function getEncryptedText(text, publicKey) {
-    const { data: encrypted } = await openpgp.encrypt({
-        message: openpgp.message.fromText(text),
-        publicKeys: (await openpgp.key.readArmored(publicKey)).keys
-    })
-    console.log(encrypted)
-    return encrypted
+    publicKey = global.publicKey
+    var key = (await openpgp.key.readArmored(publicKey)).keys[0]
+    console.log(key)
+    try {
+        const { data: encrypted } = await openpgp.encrypt({
+            message: openpgp.message.fromText(text),
+            publicKeys: key
+        })
+        console.log(encrypted)
+        return encrypted
+    } catch(e) {
+        console.log(e)
+        return ""   
+    }
 }
 
 async function getDecryptedText(data) {
