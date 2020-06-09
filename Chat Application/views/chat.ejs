@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src=”https://bundle.run/buffer@5.2.1"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <script>
+            let initinfo
+            let socket = io('http://localhost:3001')
+            socket.on('connect' , ()=>{
+                recip = window.location.pathname.split('/')[2]
+                socket.emit('recipid' , {recip:recip} , ()=>{console.log('here')})
+            })
+
+            socket.on('initinfo' , (message)=>{
+                $("#hname").html(message.name)
+                initinfo = message
+                $.ajax({url: `http://localhost:3001/getRecord/${window.location.pathname.split('/')[2]}` , type:"GET" , async: true , contentType:"JSON" , success: function(res){
+                    console.log(res)
+                    for(id of Object.keys(res))
+                    {   
+                        if(res[id].classifier.toString()=="MESSAGE")
+                        $("#inbox").append(`<li>${initinfo.ipfs==res[id].sender? initinfo.name : "YOU"}: ${res[id].message}</li>`)
+                        else
+                        $("#inbox").append(`<li>${initinfo.ipfs==message.sender? initinfo.name : "YOU"}: ${'<a href="https://ipfs.io/ipfs/' + res[id].message+'">'+'See File'+'</a>'}</li>`)
+                    }
+                }})
+                if(message.online)
+                    $("#ostat").html("online")
+            })
+
+            socket.on('ostat' , (message)=>{
+                if(message.online)
+                    $("#ostat").html("online")
+                else
+                    $("#ostat").html("offline")
+            })
+
+            socket.on('receiveMessage' , (message)=>{
+                $("#inbox").append(`<li>${initinfo.ipfs==message.sender? initinfo.name : "YOU"}: ${message.message}</li>`)
+            })
+            socket.on('receiveImage' , (message)=>{
+                // $('#inbox').append(`<li>${initinfo.ipfs==message.sender? initinfo.name : "YOU"}: ${'<img src= "' + message.imagesrc + '" width="100" height="100" alt="Red dot" />'}</li>`)
+                $("#inbox").append(`<li>${initinfo.ipfs==message.sender? initinfo.name : "YOU"}: ${'<a href="https://ipfs.io/ipfs/' + message.filesrc+'">'+'See File'+'</a>'}</li>`)
+            })
+
+            socket.on('renderimage', image);
+
+            function image (source) {
+                console.log('File hash is :',source)
+            // $('#inbox').append(`<li>${"YOU"}: ${'<img src= "' + source.source + '" width="100" height="100" alt="Red dot" />'}</li>`)
+            $('#inbox').append(`<li>${initinfo.ipfs==message.sender? initinfo.name : "YOU"}: ${'<a href="https://ipfs.io/ipfs/' + source.link+'">'+'See File'+'</a>'}</li>`)
+
+            }
+        </script>
+        <h2 id="hname"></h2>
+        <span id="ostat">offline</span>
+        <hr>
+        <ul id="inbox" style="list-style-type:none;">
+        </ul>
+        <hr>
+        <form id="login">
+        <label for="message">
+            Enter Message:
+        </label>
+        <input id="message" name="message"
+            type="text"
+            required
+        >
+        </form>
+        <form id="file_up">
+            <fieldset>
+              <legend>Upload File</legend>
+              <input type="file" name="photo" id="photo">
+              <button type="button" onclick="upload()">Upload</button>
+            </fieldset>
+          </form>
+        <button id="bttnSubmit" onclick="function1()">Send</button>
+        <script>
+            function function1() {
+                console.log("Here")
+                if(!$('#message').val())
+                    return
+                socket.emit('sendMessage' , {
+                    message : $('#message').val()
+                })
+                $("#inbox").append(`YOU: ${$('#message').val()}`)
+                $('#message').val('')
+            }
+        </script>
+            <script type="text/javascript">
+            function upload() {
+              const reader = new FileReader();
+            //   const reader1=new FileReader();
+              reader.onloadend = function() {
+                // const buf = new Buffer()
+                // image=buf.from(reader.result) // Convert data into buffer
+                socket.emit('sendFile' , {
+                    file : reader.result,
+                    extension : ext
+                })    
+              }
+              const photo = document.getElementById("photo");
+              ext=photo.value.split('.')[1]
+              console.log('Extension of the file is:'+ext)
+               //   reader1.readAsDataURL(photo.files[0])
+              reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
+            }
+        </script>
+        <hr>
+        <a href='/'>Address Book</a>
+    </body>
+</html>
