@@ -11,7 +11,7 @@ const http = require('http')
 const gdf = require('./gdf')
 const recordChat = require('./record_chat')
 var models  = require('../../models');
-
+const encryption = require('./encryption')
 
 var ipfs , room , recip , socket , ipfsid
 let connected = false
@@ -131,6 +131,8 @@ server.listen(3001, () => {
         console.log('IPFS node ready with address ' + info.id)
         console.log('Server Ready.................................\nIPFS node ready with address ' + info.id)
         room = ROOM(ipfs, "ThinQInformationRoom")
+        console.log('Loading Keys..............')
+        encryption.generateKeys()
 
         ipfsid = info.id
 
