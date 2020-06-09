@@ -67,8 +67,13 @@ io.on('connection' , (soc)=>{
                         console.log('File Hash = ' + hash)
                         models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"MESSAGE"})
                         mes=gdf.gdf_encode(hash.toString(),info.id, recip, "MESSAGE")
-                        if(room.hasPeer(recip))
-                            room.sendTo(recip,mes)
+                        if(room.hasPeer(recip)) {
+                            models.addressRecord.findOne({where : {ipfs : recip}}).then((res)=>{ 
+                                encryptedMessage = encryption.getEncryptedText(mes, res.dataValues.publicKey)
+                                console.log(encryptedMessage)
+                                room.sendTo(recip,encryptedMessage)
+                             })
+                        }
                         else
                             models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"MESSAGE"})
                     })
@@ -148,12 +153,16 @@ server.listen(3001, () => {
                 if(res.length != 0) {
                     for (let message of res) {
                         encodedMessage = gdf.gdf_encode(message.message, message.sender, message.recipient,message.classifier)
-                        room.sendTo(cid, encodedMessage)
-                        models.messageQueue.destroy({
-                            where: {
-                                id: message.id
-                            }
-                        })
+                        models.addressRecord.findOne({where : {ipfs : recip}}).then((res)=>{ 
+                            encryptedMessage = encryption.getEncryptedText(mes, res.dataValues.publicKey)
+                            console.log(encryptedMessage)
+                            room.sendTo(recip,encryptedMessage)
+                            models.messageQueue.destroy({
+                                where: {
+                                    id: message.id
+                                }
+                            })
+                         })
                     }
                 }
             })
@@ -165,45 +174,47 @@ server.listen(3001, () => {
         })
 
         room.on('message' , (message)=>{
-            let tmsg = gdf.gdf_decode(message.data.toString())
-            models.chatRecord.create({sender: tmsg.sender , message: tmsg.message , recipient: tmsg.recipient,classifier:tmsg.object_type})
-            console.log("Object type is:"+tmsg.object_type.toString())
-            if(connected && recip == tmsg.sender)
-            {
-                if(tmsg.object_type.toString()=="MESSAGE")
+            encryption.getDecryptedText(message.data.toString()).then((msg) => {
+                let tmsg = gdf.gdf_decode(msg)
+                models.chatRecord.create({sender: tmsg.sender , message: tmsg.message , recipient: tmsg.recipient,classifier:tmsg.object_type})
+                console.log("Object type is:"+tmsg.object_type.toString())
+                if(connected && recip == tmsg.sender)
                 {
-                    console.log("Message condition")
-                try {
-                    ipfs.files.read(`/ipfs/${tmsg.message}`).then((res)=>{
-                        socket.emit('receiveMessage' , {
-                            sender: tmsg.sender ,
-                            message: res.toString()
-                        })
-                    })
-                } catch(e) {
-                    console.log(e.toString())
-                }
-                }
-              else if(tmsg.object_type.toString()=="IMAGE")
-              { 
-                console.log("Image condition")
-                try 
-                {
-                    ipfs.files.read(`/ipfs/${tmsg.message}`).then((res)=>
+                    if(tmsg.object_type.toString()=="MESSAGE")
                     {
-                        socket.emit('receiveImage' , {
-                            sender: tmsg.sender ,
-                            filesrc: tmsg.message.toString()
+                        console.log("Message condition")
+                    try {
+                        ipfs.files.read(`/ipfs/${tmsg.message}`).then((res)=>{
+                            socket.emit('receiveMessage' , {
+                                sender: tmsg.sender ,
+                                message: res.toString()
+                            })
                         })
-                    })
+                    } catch(e) {
+                        console.log(e.toString())
+                    }
+                    }
+                else if(tmsg.object_type.toString()=="IMAGE")
+                { 
+                    console.log("Image condition")
+                    try 
+                    {
+                        ipfs.files.read(`/ipfs/${tmsg.message}`).then((res)=>
+                        {
+                            socket.emit('receiveImage' , {
+                                sender: tmsg.sender ,
+                                filesrc: tmsg.message.toString()
+                            })
+                        })
+                    } 
+                    catch(e) 
+                    {
+                        console.log(e.toString())
+                    }
+                    }          
+                
                 } 
-                catch(e) 
-                {
-                    console.log(e.toString())
-                }
-                }          
-            
-              } 
+            })
         })
 
       })
