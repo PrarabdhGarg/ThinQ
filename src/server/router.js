@@ -81,8 +81,16 @@ router.get('/getAddress' , function(req , res){
 
 router.post('/addAddreess', function(req, res) {
     console.log('Entered POST route')
-    models.addressRecord.create({ipfs: req.body.ipfs, name: req.body.name}).then((addressRecord) => {
-        res.json({name: addressRecord.dataValues.name , ipfs: addressRecord.dataValues.ipfs})
+    let ipfsHash, publicKey
+    try {
+        ipfsHash = req.body.ipfs.split('||')[0]
+        publicKey = req.body.ipfs.split('||')[1]
+    } catch(e) {
+        console.log(e)
+    }
+    models.addressRecord.create({ipfs: ipfsHash, name: req.body.name, publicKey: publicKey}).then((addressRecord) => {
+        console.log(JSON.stringify(addressRecord))
+        res.json({name: addressRecord.dataValues.name , ipfs: addressRecord.dataValues.ipfs, publicKey: addressRecord.dataValues.publicKey})
     }).catch((error) => {
         console.log(error)
     })
