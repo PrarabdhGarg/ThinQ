@@ -5,3 +5,4 @@ database.sqlite3
 .public.txt
 .revoce.txt
 src/server/npm-debug.log
+ipfs
