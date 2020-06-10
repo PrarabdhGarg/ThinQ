@@ -1,5 +1,5 @@
 node_modules
-src/server/ipfs
+"Chat Application"/src/server/ipfs
 database.sqlite3
 .private.txt
 .public.txt

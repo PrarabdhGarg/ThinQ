@@ -21,7 +21,7 @@ async function initializeIPFS() {
     console.log('IPFS node running with id ', id.id)
     const room = Room(node, 'room1')
     room.on('peer joined', (peer) => {
-        console.log(peer + ' Joinded')
+        console.log(peer + ' Joined')
     })
 }
 
