@@ -10,6 +10,10 @@ app.use(bodyParser.json())
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 
+app.get('/' , function(req, res) {
+    res.render('addressbook')
+})
+
 let server = http.createServer(app)
 server.listen(3000, () => {
     ipfs.initializeIPFS()
