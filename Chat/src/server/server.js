@@ -17,7 +17,6 @@ var ipfs , room , recip , socket , ipfsid
 let connected = false
 
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
 app.use(cors())
 app.set('view engine', 'ejs')
 app.use("/", router)

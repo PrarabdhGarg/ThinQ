@@ -23,6 +23,10 @@ async function initializeIPFS() {
     room.on('peer joined', (peer) => {
         console.log(peer + ' Joined')
     })
+    global.node = node
+    global.room = room
 }
 
-initializeIPFS()
+module.exports = {
+    initializeIPFS: initializeIPFS
+}
