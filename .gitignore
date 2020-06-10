@@ -1,1 +1,8 @@
 node_modules
+"Chat Application"/src/server/ipfs
+database.sqlite3
+.private.txt
+.public.txt
+.revoce.txt
+src/server/npm-debug.log
+ipfs

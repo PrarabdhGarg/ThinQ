@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ThinQ</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@1,700&display=swap" rel="stylesheet"> 
+        <style>
+            body{
+                background-color: rgb(236, 235, 235);
+            }
+            .form {
+                background-color: white;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%,-50%);
+                border: 2px solid rgb(8, 102, 209);
+                border-top: 50px solid rgb(8, 102, 209);
+                border-radius: 2%;
+                padding: 50px;
+                width:50%;
+                box-shadow: 10px 10px 10px grey;
+            }
+            .navbar-header {
+                float: left;
+                padding: 15px;
+                text-align: center;
+                width: 100%;
+            }
+            .navbar-brand {
+                font-size: 3em;
+                font-weight: bold;
+                font-family: 'Josefin Sans', sans-serif;
+                float:none;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-default" style="background-color: rgb(8, 102, 209);">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <a class="navbar-brand" style="color:white">ThinQ</a>
+              </div>
+            </div>
+        </nav>
+        <div class="form container">
+            <div class="row">
+                <div class="col-lg">
+                    <div class="page-header">
+                        <h1 style="font-weight: bold;font-family: 'Josefin Sans', sans-serif;">About You</h1>      
+                    </div>
+                    <h4>This is your first time using ThinQ. Let us get to know you...</h4>
+                    <hr>
+                    <form>
+                        <label style="font-weight: bold;" for="user">Type of User:</label>
+                        <label class="radio-inline"><input type="radio" name="user" id="sp" value="sp">Service Provider</label>
+                        <label class="radio-inline"><input type="radio" name="user" id="con" value="con">Consumer</label>
+                        <div class="form-group">
+                            <label style="font-weight: bold;" for="name">Name:</label>
+                            <input type="text" class="form-control" id="name">
+                        </div>
+                        <div class="form-group">
+                            <label style="font-weight: bold;" for="bio">Bio:</label>
+                            <textarea type="text" class="form-control" id="bio"></textarea>     
+                        </div>
+                        <button class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
