@@ -69,6 +69,25 @@ router.get('/getRecord/:recip', function(req, res) {
 //     })
 // })
 
+router.get('/getfilebook', function(req, res) {
+    models.fileBook.findAll().then(function(chats) {
+        if(chats.length == 0)
+        {
+            res.json(new Object())
+            return
+        }
+        let messages = {}
+        let count = 0
+        for(chat of chats){
+            messages[count++] = {
+                name:chat.dataValues.name,
+                link:chat.dataValues.ipfs_hash
+            }
+        }
+        res.json(messages)
+    })
+})
+
 
 router.get('/getAddress' , function(req , res){
     models.addressRecord.findAll({}).then((result)=>{
