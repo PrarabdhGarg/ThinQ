@@ -5,6 +5,7 @@ const cors = require('cors')
 const http = require('http')
 const ipfs = require('./ipfs')
 const db = require('../models/database')
+const Sequelize = require('sequelize')
 const cryptography = require('./cryptography')
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -53,7 +54,8 @@ app.get('/contacts' , function(req , res){
     })
 })
 
-app.get('/getAddress' , function(req , res){
+app.get('/getAddress' , async function(req , res){
+    let nodeid = await global.node.id()
     global.User.findAll({}).then((contacts)=>{
         let promises = []
 
@@ -68,8 +70,11 @@ app.get('/getAddress' , function(req , res){
 
         Promise.all(promises).then((bios)=>{
             for(let i=0; i<contacts.length ; i++)
-                contacts[i].bio = bios[i][0].content.toString()
-
+                contacts[i].bio = bios[i][0].content.toString() 
+            
+            contacts = contacts.filter((value , index , arr)=>{
+                return !(value.ipfs==nodeid.id)
+            })
             res.json(contacts)
         })
     })
