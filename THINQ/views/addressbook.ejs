@@ -41,6 +41,11 @@
                 <h6 id="ID">Your ID: <%=filehash%></h6>
             </div>
             <hr>
+            <div>
+                <button style="position: absolute; left:74%;"type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateBio">
+                    Update Bio
+                </button>
+            </div>
             <p><span style="font-weight: bold; font-family: 'Josefin Sans', sans-serif; font-size: 1.5em;">Bio: </span><span id="bio"><%=bio%></span></p>
             <hr>
             <h2 style="font-weight: bold;">Contact List
@@ -76,6 +81,29 @@
                   </div>
                 </div>
             </div>
+            <div class="modal fade" id="updateBio" tabindex="-1" role="dialog" aria-labelledby="addContact" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="addContactTitle">New Contact</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="bio_form">
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="Bio">Updated Bio:</label>
+                                <input id="Name" class="form-control" name="Name" type="text" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="updateBio()">Update</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
             <div id="contactlist" class="list-group">
             </div>
         </div>
@@ -85,6 +113,15 @@
                         for(contact of res)
                             $('#contactlist').append(createListItem(contact))
                 }});
+
+            function updateBio() {
+                console.log("Inside Update Bio")
+                $.ajax({url: "http://localhost:3000/updateBio", type: 'POST', async: true, data: {
+                    bio: document.getElementById('bio_form').elements[0].value
+                }, success: function(res) {
+                    console.log('Bio Updated sucessfully')
+                }})
+            }
 
             function addContact(){
                 console.log("Here")
