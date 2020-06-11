@@ -1,6 +1,7 @@
 const express = require('express');
 var router = express.Router();
 const userInfo = require('./userInfo')
+const cryptography = require('./cryptography')
 
 router.get('/' , function(req, res) {
     global.node.id().then((info)=>{
