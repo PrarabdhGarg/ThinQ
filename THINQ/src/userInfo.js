@@ -27,12 +27,10 @@ async function updateBio(updatedBio) {
                 console.log(JSON.stringify(file))
                 data = JSON.parse(file.content.toString())
                 console.log(file.content.toString())
-                data['bio'] = updatedBio
-                global.node.add(JSON.stringify(data)).then(([stat]) => {
-                    console.log('Hash of new file = ' + stat.hash.toString())
-                    global.node.add(updatedBio).then(([stat2]) => {
-                        console.log('Hash of bio file = ' + stat2.hash.toString())
-                        global.User.update({bio: stat2.hash.toString(), filehash: stat.hash.toString()}, {where: {ipfs: info.id}}).then((result1) => {
+                global.node.add(updatedBio).then(([stat]) => {
+                    data['bio'] = stat.hash.toString()
+                    global.node.add(JSON.stringify(data)).then(([stat2]) => {
+                        global.User.update({bio: stat.hash.toString(), filehash: stat2.hash.toString()}, {where: {ipfs: info.id}}).then((result1) => {
                             console.log('Database updated sucessfully')
                         })
                     })
