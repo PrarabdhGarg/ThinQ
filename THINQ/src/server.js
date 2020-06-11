@@ -25,7 +25,7 @@ app.get('/' , function(req, res) {
 
 app.post('/init' , function(req , res){
     let init_info = req.body
-    global.node.id().then((info)=>{
+    global.node.id().then(async (info)=>{
         await cryptography.generateKeys()
         let public_key = cryptography.getPublicKey()
         global.node.add(public_key).then(([stat]) => {
