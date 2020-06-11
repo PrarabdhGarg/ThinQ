@@ -1,7 +1,6 @@
 const express = require('express');
 var router = express.Router();
 const userInfo = require('./userInfo')
-const cryptography = require('./cryptography')
 
 router.get('/' , function(req, res) {
     global.node.id().then((info)=>{
@@ -14,24 +13,10 @@ router.get('/' , function(req, res) {
     })
 })
 
-router.post('/init' , function(req , res){
+router.post('/init' , async function(req , res){
     let init_info = req.body
-    global.node.id().then(async (info)=>{
-        await cryptography.generateKeys()
-        let public_key = cryptography.getPublicKey()
-        Promise.all([global.node.add(public_key) , global.node.add(req.body.bio)]).then((stats) => {
-            init_info['PublicKey'] = stats[0][0].hash.toString()
-            init_info['IPFSHash'] = info.id.toString()
-            init_info['bio'] = stats[1][0].hash.toString()
-            console.log(JSON.stringify(init_info))
-            global.node.add(JSON.stringify(init_info)).then(([stat])=>{
-                console.log('File hash = ' + stat.hash.toString())
-                global.User.create({name:init_info.name , ipfs:info.id , bio:init_info.bio , type:init_info.type , filehash:stat.hash.toString()}).then((result)=>{
-                    res.redirect('/contacts')
-                })
-            })
-        })
-    })
+    await userInfo.createUserRecord(init_info)
+    res.redirect('/contacts')
 })
 
 router.get('/contacts' , function(req , res){
