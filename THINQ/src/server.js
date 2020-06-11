@@ -5,6 +5,7 @@ const cors = require('cors')
 const http = require('http')
 const ipfs = require('./ipfs')
 const db = require('../models/database')
+const cryptography = require('./cryptography')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -25,9 +26,16 @@ app.get('/' , function(req, res) {
 app.post('/init' , function(req , res){
     let init_info = req.body
     global.node.id().then((info)=>{
-        global.node.add(JSON.stringify(init_info)).then(([stat])=>{
-            global.User.create({name:init_info.name , ipfs:info.id , bio:init_info.bio , type:init_info.user , filehash:stat.hash.toString()}).then((result)=>{
-                res.redirect('/contacts')
+        await cryptography.generateKeys()
+        let public_key = cryptography.getPublicKey()
+        global.node.add(public_key).then(([stat]) => {
+            init_info['PublicKey'] = stat.hash.toString()
+            init_info['IPFSHash'] = info.id.toString()
+            global.node.add(JSON.stringify(init_info)).then(([stat])=>{
+                console.log('File hash = ' + stat.hash.toString())
+                global.User.create({name:init_info.name , ipfs:info.id , bio:init_info.bio , type:init_info.user , filehash:stat.hash.toString()}).then((result)=>{
+                    res.redirect('/contacts')
+                })
             })
         })
     })
