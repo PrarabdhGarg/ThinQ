@@ -22,6 +22,10 @@ async function generateKeys() {
     }
 }
 
+function getPublicKey() {
+    return fs.readFileSync('./.public.txt')
+}
+
 async function getEncryptedText(text, publicKey) {
     const { data: encrypted } = await openpgp.encrypt({
         message: openpgp.message.fromText(text),
@@ -46,5 +50,6 @@ async function getDecryptedText(data) {
 module.exports = {
     generateKeys: generateKeys,
     getDecryptedText: getDecryptedText,
-    getEncryptedText: getEncryptedText
+    getEncryptedText: getEncryptedText,
+    getPublicKey: getPublicKey
 }

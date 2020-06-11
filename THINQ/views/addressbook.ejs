@@ -3,7 +3,7 @@
     <head>
         <title>ThinQ</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
         <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@1,700&display=swap" rel="stylesheet">
@@ -36,27 +36,113 @@
         </nav>
         <div class="container" style="padding-top:2%; ">
             <div style="font-family: 'Josefin Sans', sans-serif;">
-                <h2 id="name">Unmesh Roy</h2>
-                <h4 id="usertype">Consumer</h4>
+                <h2 id="name"><%=name%></h2>
+                <h4 id="usertype"><%=type==1?"Service Provider" : "Consumer"%></h4>
+                <h6 id="ID">Your ID: <%=filehash%></h6>
             </div>
             <hr>
-            <p><span style="font-weight: bold; font-family: 'Josefin Sans', sans-serif; font-size: 1.5em;">Bio: </span><span id="bio">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lacinia elementum leo in euismod. Vestibulum eu neque convallis, pellentesque turpis vitae, sodales arcu. Pellentesque fermentum eros eget justo cursus, id luctus ex luctus. Etiam eu ullamcorper massa. Cras et nisi cursus, gravida dolor id, placerat odio. Morbi bibendum turpis ex, pellentesque aliquam nibh gravida quis. Nulla mollis, sapien vel scelerisque euismod, dolor lorem aliquam leo, dictum mollis sem mi tempus odio. Nulla ultrices, dui sed condimentum dignissim, dui est lobortis erat, sed gravida felis lectus sed enim. Fusce a malesuada risus. Nam iaculis nec enim ut blandit. Nam molestie, dolor vitae scelerisque volutpat, ligula sapien semper elit, at pulvinar risus ipsum at nisi. </span></p>
+            <div>
+                <button style="position: absolute; left:74%;"type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateBio">
+                    Update Bio
+                </button>
+            </div>
+            <p><span style="font-weight: bold; font-family: 'Josefin Sans', sans-serif; font-size: 1.5em;">Bio: </span><span id="bio"><%=bio%></span></p>
             <hr>
-            <h2 style="font-weight: bold;">Contact List</h2>
-            <div class="list-group">
-                <div class="list-group-item">
-                    <h3>Contact A</h3>
-                    <p>Service Provider</p>
-                    <p>Vestibulum id lectus at risus tempus iaculis in id elit. Proin sed mauris nec leo tincidunt accumsan. Sed nisi ex, rutrum a laoreet ut, viverra eu mi. Integer efficitur convallis dictum. Nunc rhoncus aliquam lobortis. Sed a congue felis. Suspendisse fringilla placerat finibus. Vestibulum in nunc ut sem aliquam posuere a id libero. </p>
-                    <button type="button" class="btn btn-primary">Ask for service</button>
-                </div>
-                <div class="list-group-item">
-                    <h3>Contact B</h3>
-                    <p>Service Provider</p>
-                    <p>Vestibulum id lectus at risus tempus iaculis in id elit. Proin sed mauris nec leo tincidunt accumsan. Sed nisi ex, rutrum a laoreet ut, viverra eu mi. Integer efficitur convallis dictum. Nunc rhoncus aliquam lobortis. Sed a congue felis. Suspendisse fringilla placerat finibus. Vestibulum in nunc ut sem aliquam posuere a id libero. </p>
-                    <button type="button" class="btn btn-primary">Ask for service</button>
+            <h2 style="font-weight: bold;">Contact List
+            &nbsp;
+            <button style="position: absolute; left:74%;"type="button" class="btn btn-primary" data-toggle="modal" data-target="#addContact">
+                Add Contact
+            </button>
+            </h2>
+            <div class="modal fade" id="addContact" tabindex="-1" role="dialog" aria-labelledby="addContact" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="addContactTitle">New Contact</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="contact">
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="Name">Name:</label>
+                                <input id="Name" class="form-control" name="Name" type="text" required>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="ID">ID:</label>
+                                <input id="ID" class="form-control" name="ID" type="text" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="addContact()">Add contact</button>
+                    </div>
+                  </div>
                 </div>
             </div>
+            <div class="modal fade" id="updateBio" tabindex="-1" role="dialog" aria-labelledby="updateBio" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="addContactTitle">Update Bio</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="bio_form">
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="Bio">Updated Bio:</label>
+                                <input id="updatedbio" class="form-control" name="Name" type="text" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="updateBio()">Update</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div id="contactlist" class="list-group"></div>
         </div>
+        <script>
+                $.ajax({url: "http://localhost:3000/getAddress", type:'GET', async: true, 
+                    success: function(res){
+                        for(contact of res)
+                            $('#contactlist').append(createListItem(contact))
+                }});
+
+            function updateBio() {
+                console.log("Inside Update Bio")
+                $.ajax({url: "http://localhost:3000/updateBio", type: 'POST', async: true, data: {
+                    bio: document.getElementById('bio_form').elements[0].value
+                }, success: function(res) {
+                    $("#bio").html(res)
+                }})
+            }
+
+            function addContact(){
+                console.log("Here")
+                $.ajax({url: "http://localhost:3000/addAddress", type:'POST', async: true, data: {
+                    id: document.getElementById('contact').elements[1].value,
+                    name: document.getElementById('contact').elements[0].value
+                }, success: function(res){
+                    $("#contactlist").append(createListItem(res))
+                }});
+            }
+
+            function createListItem(res){
+                let item = `<div class="list-group-item">
+                    <h3>${res.name}</h3>
+                    <p>${res.type==1?"Service Provider" : "Consumer"}</p>
+                    <p>${res.bio}</p>`
+                if(res.type == 1)
+                    item = item + `<button type="button" class="btn btn-primary">Ask for service</button>`
+                item = item + `</div>`
+
+                return item
+            }
+        </script>
     </body>
 </html>

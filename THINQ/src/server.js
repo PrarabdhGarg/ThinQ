@@ -2,19 +2,24 @@ const express = require('express')
 const app = express()
 const bodyParser = require("body-parser")
 const cors = require('cors')
+const router = require('./router')
 const http = require('http')
 const ipfs = require('./ipfs')
+const db = require('../models/database')
+const Sequelize = require('sequelize')
+const cryptography = require('./cryptography')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.use(cors())
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
-
-app.get('/' , function(req, res) {
-    res.render('addressbook')
-})
+app.use("/", router)
 
 let server = http.createServer(app)
 server.listen(3000, () => {
     ipfs.initializeIPFS()
+    global.User.sync({force: false}).then(() => {
+        console.log('USER table created')
+    })
 })
