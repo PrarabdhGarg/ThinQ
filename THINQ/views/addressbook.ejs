@@ -36,11 +36,11 @@
         </nav>
         <div class="container" style="padding-top:2%; ">
             <div style="font-family: 'Josefin Sans', sans-serif;">
-                <h2 id="name">Unmesh Roy</h2>
-                <h4 id="usertype">Consumer</h4>
+                <h2 id="name"><%=name%></h2>
+                <h4 id="usertype"><%=type==1?"Service Provider" : "Consumer"%></h4>
             </div>
             <hr>
-            <p><span style="font-weight: bold; font-family: 'Josefin Sans', sans-serif; font-size: 1.5em;">Bio: </span><span id="bio">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam lacinia elementum leo in euismod. Vestibulum eu neque convallis, pellentesque turpis vitae, sodales arcu. Pellentesque fermentum eros eget justo cursus, id luctus ex luctus. Etiam eu ullamcorper massa. Cras et nisi cursus, gravida dolor id, placerat odio. Morbi bibendum turpis ex, pellentesque aliquam nibh gravida quis. Nulla mollis, sapien vel scelerisque euismod, dolor lorem aliquam leo, dictum mollis sem mi tempus odio. Nulla ultrices, dui sed condimentum dignissim, dui est lobortis erat, sed gravida felis lectus sed enim. Fusce a malesuada risus. Nam iaculis nec enim ut blandit. Nam molestie, dolor vitae scelerisque volutpat, ligula sapien semper elit, at pulvinar risus ipsum at nisi. </span></p>
+            <p><span style="font-weight: bold; font-family: 'Josefin Sans', sans-serif; font-size: 1.5em;">Bio: </span><span id="bio"><%=bio%></span></p>
             <hr>
             <h2 style="font-weight: bold;">Contact List</h2>
             <div class="list-group">

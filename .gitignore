@@ -6,3 +6,4 @@ database.sqlite3
 .revoce.txt
 src/server/npm-debug.log
 ipfs
+THINQ/models/database.sqlite3
