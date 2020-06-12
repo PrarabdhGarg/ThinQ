@@ -1,14 +1,19 @@
 const cryptography = require('./cryptography')
 const gdf = require('./gdf')
 
-// Assumption is that the message is already gdf encoded
 function broadcastMessageToRoom(message) {
-    global.room.broadcast(message)
+    message['recipient'] = 'All'
+    global.room.broadcast(gdf.gdf_encode(message))
 }
 
-// Assumption is that the message is already gdf encoded
-async function sendMessageToUser(message, user) {
-    messageObject = gdf.gdf_decode(message)
+async function sendMessageToUser(msg, user) {
+    message = gdf.gdf_encode(msg)
+    pkHash = (await global.User.findOne({where: {ipfs: user}})).dataValues.publicKey
+    global.node.get(pkHash).then(([file]) => {
+        cryptography.getEncryptedText(message, file.content.toString()).then((msg) => {
+            global.room.sendTO(user, msg)
+        })
+    })
 }
 
 module.exports = {
