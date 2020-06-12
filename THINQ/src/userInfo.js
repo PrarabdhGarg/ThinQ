@@ -11,7 +11,7 @@ async function createUserRecord(init_info) {
             console.log(JSON.stringify(init_info))
             global.node.add(JSON.stringify(init_info)).then(([stat])=>{
                 console.log('File hash = ' + stat.hash.toString())
-                global.User.create({name:init_info.name , ipfs:info.id , bio:init_info.bio, public_key:stats[0][0].hash.toString(), type:init_info.type , filehash:stat.hash.toString()}).then((result)=>{
+                global.User.create({name:init_info.name , ipfs:info.id , bio:init_info.bio, publicKey:stats[0][0].hash.toString(), type:init_info.type , filehash:stat.hash.toString()}).then((result)=>{
                     return result
                 })
             })

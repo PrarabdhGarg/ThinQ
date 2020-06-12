@@ -56,7 +56,7 @@ router.get('/getAddress' , async function(req , res){
 router.post('/addAddress' , function(req , res){
     global.node.get(req.body.id).then(([info])=>{
         let user_info = JSON.parse(info.content.toString())
-        global.User.create({type:user_info.type , name:req.body.name , filehash:req.body.id , ipfs:user_info.IPFSHash , bio:user_info.bio})
+        global.User.create({type:user_info.type , name:req.body.name , filehash:req.body.id , publicKey:user_info.PublicKey , ipfs:user_info.IPFSHash , bio:user_info.bio})
         user_info['name'] = req.body.name
         global.node.get(user_info.bio).then(([bio])=>{
             user_info['bio'] = bio.content.toString()
