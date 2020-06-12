@@ -12,5 +12,5 @@ module.exports = function(sequelize, DataTypes) {
         timestamp: DataTypes.DATE,
         priority: DataTypes.DOUBLE
     })
-    return User
+    return OutboxMessages
 }

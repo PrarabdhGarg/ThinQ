@@ -11,5 +11,5 @@ module.exports = function(sequelize, DataTypes) {
         reciverType: DataTypes.STRING,
         timestamp: DataTypes.DATE
     })
-    return User
+    return PendingMessages
 }
