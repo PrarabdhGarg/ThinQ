@@ -2,7 +2,7 @@ const cryptography = require('./cryptography')
 const message = require('./message')
 const MessageAction = require('./messageAction')
 
-async function createUserRecord(init_info) {
+async function createUserRecord(init_info , res) {
     global.node.id().then(async (info)=>{
         await cryptography.generateKeys()
         let public_key = cryptography.getPublicKey()
@@ -14,7 +14,7 @@ async function createUserRecord(init_info) {
             global.node.add(JSON.stringify(init_info)).then(([stat])=>{
                 console.log('File hash = ' + stat.hash.toString())
                 global.User.create({name:init_info.name , ipfs:info.id , bio:init_info.bio, publicKey:stats[0][0].hash.toString(), type:init_info.type , filehash:stat.hash.toString()}).then((result)=>{
-                    return result
+                    res.redirect("/contacts")
                 })
             })
         })

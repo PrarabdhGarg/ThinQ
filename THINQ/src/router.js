@@ -15,8 +15,7 @@ router.get('/' , function(req, res) {
 
 router.post('/init' , async function(req , res){
     let init_info = req.body
-    await userInfo.createUserRecord(init_info)
-    res.redirect('/contacts')
+    userInfo.createUserRecord(init_info , res)
 })
 
 router.get('/contacts' , function(req , res){
