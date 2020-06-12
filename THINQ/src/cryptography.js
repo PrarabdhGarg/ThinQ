@@ -37,7 +37,8 @@ async function getEncryptedText(text, publicKey) {
 
 async function getDecryptedText(encrypted) {
     passphrase = 'super long and hard to guess secret'
-    const { keys: [privateKey] } = await openpgp.key.readArmored(global.privateKey);
+    privKey = fs.readFileSync('./.private.txt')
+    const { keys: [privateKey] } = await openpgp.key.readArmored(privKey);
     await privateKey.decrypt(passphrase);
     const { data: decrypted } = await openpgp.decrypt({
         message: await openpgp.message.readArmored(encrypted),

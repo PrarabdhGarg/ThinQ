@@ -11,7 +11,7 @@ async function sendMessageToUser(msg, user) {
     pkHash = (await global.User.findOne({where: {ipfs: user}})).dataValues.publicKey
     global.node.get(pkHash).then(([file]) => {
         cryptography.getEncryptedText(message, file.content.toString()).then((msg) => {
-            global.room.sendTO(user, msg)
+            global.room.sendTo(user, msg)
         })
     })
 }

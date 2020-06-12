@@ -34,6 +34,7 @@ async function updateBio(updatedBio) {
                     global.node.add(JSON.stringify(data)).then(([stat2]) => {
                         global.User.update({bio: stat.hash.toString(), filehash: stat2.hash.toString()}, {where: {ipfs: info.id}}).then((result1) => {
                             console.log('Database updated sucessfully')
+                            // TODO: Broadcast is not working. Change to sendTo
                             message.broadcastMessageToRoom({
                                 sender: info.id,
                                 action: MessageAction.UPDATE,
