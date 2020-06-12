@@ -27,6 +27,13 @@ app.get('/' , function(req, res) {
     res.render('addressbook' , {ipfsid : ipfsid})
 })
 
+app.get('/fb' , function(req, res) {
+
+    res.render('filebook')
+})
+
+
+
 let server = http.createServer(app)
 
 const io = require('socket.io')(server)
@@ -82,9 +89,52 @@ io.on('connection' , (soc)=>{
     })
     socket.on('sendFile' , (res)=>{
         ipfs.id((err , info)=>{  
+            // let hash
+            models.chatRecord.create({sender:info.id , message: res.hash.toString() , recipient: recip ,classifier:"IMAGE"})
+                        mes=gdf.gdf_encode(res.hash.toString(),info.id, recip, "IMAGE")
+                        console.log('recipient is:',recip)
+                        if(room.hasPeer(recip))
+                            room.sendTo(recip,mes)
+                        else
+                            models.messageQueue.create({sender:info.id , message: res.hash.toString() , recipient: recip,classifier:"IMAGE"})
+                        socket.emit('renderimage', { link : res.hash.toString() });
+            // documentPath = path.join(__dirname , 'ipfs/thinq/files/')
+            // documentPath = path.join(documentPath, recip + 'sent/' + Date.now() + '.'+res.extension)
+            // ipfs.files.write(documentPath, Buffer.from(res.file), {
+            //     create: true,
+            //     parents: true
+            // }, (err, resp) => {
+            //     if(err) {
+            //         console.log("Error in inserting file " + err.message)
+            //     } else {
+            //         ipfs.files.stat(documentPath, (err, respon) => {
+            //             if(err) {
+            //                 console.log("Error in inserting file" + err.message)
+            //             }
+            //             console.log('Stat Result = ' + JSON.stringify(respon))
+            //             hash = respon.hash
+            //             console.log('File Hash = ' + hash)
+            //             dname=path.join(__dirname , 'ipfs/thinq/files/')
+            //             ipfs.files.ls(path.join(dname, recip + 'sent/'),(err,response)=>{
+            //                 console.log(response);
+            //             })
+            //             models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip ,classifier:"IMAGE"})
+            //             mes=gdf.gdf_encode(hash.toString(),info.id, recip, "IMAGE")
+            //             if(room.hasPeer(recip))
+            //                 room.sendTo(recip,mes)
+            //             else
+            //                 models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"IMAGE"})
+            //             socket.emit('renderimage', { link : hash.toString() });
+            //         })
+            //     }
+            // })
+        })
+    })
+    socket.on('upload_filebook' , (res)=>{
+        ipfs.id((err , info)=>{  
             let hash
-            documentPath = path.join(__dirname , 'ipfs/thinq/files/')
-            documentPath = path.join(documentPath, recip + 'sent/' + Date.now() + '.'+res.extension)
+            documentPath = path.join(__dirname , 'ipfs/thinq/filebook/')
+            documentPath = path.join(documentPath, info.id +  Date.now() + '.'+res.extension)
             ipfs.files.write(documentPath, Buffer.from(res.file), {
                 create: true,
                 parents: true
@@ -99,16 +149,18 @@ io.on('connection' , (soc)=>{
                         console.log('Stat Result = ' + JSON.stringify(respon))
                         hash = respon.hash
                         console.log('File Hash = ' + hash)
-                        models.chatRecord.create({sender:info.id , message: hash.toString() , recipient: recip ,classifier:"IMAGE"})
-                        mes=gdf.gdf_encode(hash.toString(),info.id, recip, "IMAGE")
-                        if(room.hasPeer(recip))
-                            room.sendTo(recip,mes)
-                        else
-                            models.messageQueue.create({sender:info.id , message: hash.toString() , recipient: recip,classifier:"IMAGE"})
-                        socket.emit('renderimage', { link : hash.toString() });
-                    })
-                }
-            })
+                        models.fileBook.findOne({ where: { 'ipfs_hash':hash.toString()} }).then(token => {
+                            if(token === null)
+                            {
+                            models.fileBook.create({ipfs_hash: hash.toString(),name:res.name})
+                            socket.emit('addfb', { name:res.name,link : hash.toString() });
+                            }
+                         })
+                        })
+                        
+                    }
+                })
+            
         })
     })
 })
@@ -229,8 +281,11 @@ server.listen(3001, () => {
     global.MessageQueue.sync({force: false}).then(() => {
         console.log('Message Queue Table created')
     })
-    global.addressRecord.sync({force:false}).then(() => {
+    global.addressRecord.sync({force: false}).then(() => {
         console.log("Address Table Created")
+    })
+    global.fileBook.sync({force: false}).then(() => {
+        console.log("Filebook Table Created")
     })
 })
 

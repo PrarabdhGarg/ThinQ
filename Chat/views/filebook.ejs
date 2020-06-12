@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>FileBook</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src=”https://bundle.run/buffer@5.2.1"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <h3>FILEBOOK</h3>
+        <script>
+            let initinfo
+            let socket = io('http://localhost:3001')
+                $.ajax({url: `http://localhost:3001/getfilebook` , type:"GET" , async: true , contentType:"JSON" , success: function(res){
+                    console.log(res)
+                    for(id of Object.keys(res))
+                    {   
+                    $("#filebook").append(`<input type="radio" id=${res[id].link} name=${res[id].name} value=${res[id].link}>
+                    <label for=${res[id].link}> ${res[id].name}</label><br>`)
+                    }
+                }})
+ 
+            socket.on('addfb' , (message)=>{
+                $("#filebook").append(`<input type="radio" id=${message.link} name=${res[id].name} value=${message.link}>
+            <label for=${message.link}> ${message.name}</label><br>`)
+            })
+
+        </script>
+
+        <form id="filebook">
+        </form>
+        <button type="button" onclick="send()">Submit</button>
+          
+
+            <form id="file_up">
+            <fieldset>
+              <legend>Upload to FileBook</legend>
+              <input type="file" name="photo" id="photo">
+              <button type="button" onclick="upload()">Upload</button>
+            </fieldset>
+          </form>
+          <script type="text/javascript">
+            function upload() {
+              const reader = new FileReader();
+              reader.onloadend = function() {
+                socket.emit('upload_filebook' , {
+                    file : reader.result,
+                    extension : ext,
+                    name :filename
+                })    
+              }
+              const photo = document.getElementById("photo");
+              ext=photo.value.split('.')[1]
+              filename=photo.value.split('\\')[2]
+              console.log('Extension of the file is:'+ext)
+              reader.readAsArrayBuffer(photo.files[0]);
+            }
+            var form = document.getElementById("filebook");
+            function send() {             
+              var data = new FormData(form);
+                for (const entry of data) {
+                  console.log("Filebook passes",entry[1])
+                    socket.emit('sendFile',{hash:entry[1]});
+                };
+        }
+        </script>
+     <hr>
+     <a href='/'>Address Book</a>
+ </body>
