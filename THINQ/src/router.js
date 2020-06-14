@@ -93,6 +93,7 @@ router.post('/addAddress' , function(req , res){
         user_info['name'] = req.body.name
         global.node.get(user_info.bio).then(([bio])=>{
             user_info['bio'] = bio.content.toString()
+            user_info['ipfs'] = user_info['IPFSHash']
             console.log(JSON.stringify(user_info))
             res.json(user_info)
         })
@@ -100,16 +101,19 @@ router.post('/addAddress' , function(req , res){
 })
 
 router.post('/addRequest' , function(req , res){
-    global.node.id().then((info)=>{
-        let msg = {
-            sender : info.id,
-            recipient: req.body.ipfs,
-            action: messageAction.REQUEST
-        }
-        message.sendMessageToUser(msg , req.body.ipfs )
-    })
     global.SentRequest.create({sender:req.body.ipfs , status: "Unused"}).then((result)=>{
-        res.json({success:true})
+        
+        global.node.id().then((info)=>{
+            let msg = {
+                sender : info.id,
+                recipient: req.body.ipfs,
+                action: messageAction.REQUEST
+            }
+            console.log(req.body.ipfs)
+            message.sendMessageToUser(msg , req.body.ipfs ).then((result)=>{
+                res.json({success:true})
+            })
+        })
     })
 })
 
