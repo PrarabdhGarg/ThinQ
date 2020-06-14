@@ -42,8 +42,9 @@
                 <button type="button" class="btn btn-primary" >
                     <a style="color: white" href="/sentRequests">View Sent Requests</a>
                 </button>
-                <button type="button" class="btn btn-primary" >
-                    <a style='color: white; display: <%=type==1?"inline-block" : "hidden"%>' href="/pendingRequests">View Pending Requests</a>
+                &nbsp;
+                <button style='display: <%=type==1?"inline-block" : "none"%>' type="button" class="btn btn-primary" >
+                    <a style='color: white;' href="/pendingRequests">View Pending Requests</a>
                 </button>
             </div>
             <hr>
