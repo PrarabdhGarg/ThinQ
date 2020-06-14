@@ -1,6 +1,8 @@
 const express = require('express');
 var router = express.Router();
 const userInfo = require('./userInfo')
+const messageAction = require('./messageAction')
+const message = require('./message')
 
 router.get('/' , function(req, res) {
     global.node.id().then((info)=>{
@@ -10,6 +12,38 @@ router.get('/' , function(req, res) {
             else
                 res.redirect('/contacts')
         })
+    })
+})
+
+router.get('/sentRequests' , (req , res)=>{
+    global.SentRequest.findAll({}).then((requests)=>{
+        let promises = []
+        for(request of requests)
+            promises.push(global.User.findOne({where: {ipfs:request.dataValues.sender}}))
+
+        Promise.all(promises).then((users)=>{
+            for(let i=0 ; i<requests.length ; i++)
+                requests[i].dataValues.sender = users[i].dataValues.name
+                
+            res.render('request.ejs' , {requestType: "Sent" , requests:requests})
+        })
+        
+    })
+})
+
+router.get('/pendingRequests' , (req , res)=>{
+    global.PendingRequest.findAll({}).then((requests)=>{
+        let promises = []
+        for(request of requests)
+            promises.push(global.User.findOne({where: {ipfs:request.dataValues.sender}}))
+
+        Promise.all(promises).then((users)=>{
+            for(let i=0 ; i<requests.length ; i++)
+                requests[i].dataValues.sender = users[i].dataValues.name
+            
+            res.render('request.ejs' , {requestType: "Pending" , requests:requests})
+        })
+        
     })
 })
 
@@ -62,6 +96,20 @@ router.post('/addAddress' , function(req , res){
             console.log(JSON.stringify(user_info))
             res.json(user_info)
         })
+    })
+})
+
+router.post('/addRequest' , function(req , res){
+    global.node.id().then((info)=>{
+        let msg = {
+            sender : info.id,
+            recipient: req.body.ipfs,
+            action: messageAction.REQUEST
+        }
+        message.sendMessageToUser(msg , req.body.ipfs )
+    })
+    global.SentRequest.create({sender:req.body.ipfs , status: "Unused"}).then((result)=>{
+        res.json({success:true})
     })
 })
 

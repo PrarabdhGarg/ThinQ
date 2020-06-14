@@ -10,6 +10,7 @@ const Sequelize = require('sequelize')
 const cryptography = require('./cryptography')
 const gdf = require('./gdf')
 const messageAction = require('./messageAction')
+const messages = require('./message')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -23,6 +24,30 @@ server.listen(3000, async () => {
     await ipfs.initializeIPFS()
     global.User.sync({force: false}).then(() => {
         console.log('USER table created')
+    })
+    global.PendingMessages.sync({force: false}).then(() => {
+        console.log('Pending table created')
+    })
+    global.SentRequest.sync({force: false}).then(() => {
+        console.log('Sent Request table created')
+    })
+    global.PendingRequest.sync({force: false}).then(() => {
+        console.log('Pending Request table created')
+    })
+
+    global.room.on('peer joined', (cid) => {
+        global.PendingMessages.findAll({
+            where: {
+                reciver: cid
+            }
+        }).then((res) => {
+            console.log("List of messages = " + JSON.stringify(res))
+            if(res.length != 0) {
+                for (let message of res) {
+                    messages.sendMessageToUser(message, cid)
+                }
+            }
+        })
     })
 
     global.room.on("message" , async (message)=>{
@@ -50,6 +75,10 @@ server.listen(3000, async () => {
                     })
                 })
             })
+        }
+        else if(decoded_msg.action == messageAction.REQUEST)
+        {
+            global.PendingRequest.create({sender: message.from , status: "Unused"})
         }
     })
 })

@@ -39,6 +39,12 @@
                 <h2 id="name"><%=name%></h2>
                 <h4 id="usertype"><%=type==1?"Service Provider" : "Consumer"%></h4>
                 <h6 id="ID">Your ID: <%=filehash%></h6>
+                <button type="button" class="btn btn-primary" >
+                    <a style="color: white" href="/sentRequests">View Sent Requests</a>
+                </button>
+                <button type="button" class="btn btn-primary" >
+                    <a style='color: white; display: <%=type==1?"inline-block" : "hidden"%>' href="/pendingRequests">View Pending Requests</a>
+                </button>
             </div>
             <hr>
             <div>
@@ -106,7 +112,26 @@
             </div>
             <div id="contactlist" class="list-group"></div>
         </div>
+        <div class="modal fade" id="reqSuc" tabindex="-1" role="dialog" aria-labelledby="reqSucT" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="reqSucT">Request Status</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  Request sent successfully
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
         <script>
+                
                 $.ajax({url: "http://localhost:3000/getAddress", type:'GET', async: true, 
                     success: function(res){
                         for(contact of res)
@@ -138,10 +163,18 @@
                     <p>${res.type==1?"Service Provider" : "Consumer"}</p>
                     <p>${res.bio}</p>`
                 if(res.type == 1)
-                    item = item + `<button type="button" class="btn btn-primary">Ask for service</button>`
+                    item = item + `<button type="button" class="btn btn-primary" onclick=addRequest("${res.ipfs}")>Ask for service</button>`
                 item = item + `</div>`
 
                 return item
+            }
+
+            function addRequest(ipfs){
+                $.ajax({url: "http://localhost:3000/addRequest" , type:'POST' , async: true, data:{
+                    ipfs:ipfs
+                }, success: function(res){
+                    $("#reqSuc").modal({keyboard: true})
+                }})
             }
         </script>
     </body>

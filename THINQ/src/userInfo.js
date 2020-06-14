@@ -34,7 +34,7 @@ async function updateBio(updatedBio) {
                     global.node.add(JSON.stringify(data)).then(([stat2]) => {
                         global.User.update({bio: stat.hash.toString(), filehash: stat2.hash.toString()}, {where: {ipfs: info.id}}).then((result1) => {
                             console.log('Database updated sucessfully')
-                            message.sendMessageToUser({
+                            message.broadcastMessageToAddressBook({
                                 sender: info.id,
                                 action: MessageAction.UPDATE,
                                 message: stat.hash.toString(),

@@ -2,14 +2,13 @@
 
 module.exports = function(sequelize, DataTypes) {
     global.PendingMessages = sequelize.define("PendingMessages", {
-        uid: DataTypes.STRING,
+        uid: DataTypes.INTEGER,
         sender: DataTypes.STRING,
         action: DataTypes.INTEGER, // Currently, this would be 1 for requests and 2 for updates
         message: DataTypes.STRING,
         messageType: DataTypes.STRING,
         reciver: DataTypes.STRING,
         reciverType: DataTypes.STRING,
-        timestamp: DataTypes.DATE
     })
     return PendingMessages
 }
