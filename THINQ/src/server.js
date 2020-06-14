@@ -10,6 +10,7 @@ const Sequelize = require('sequelize')
 const cryptography = require('./cryptography')
 const gdf = require('./gdf')
 const messageAction = require('./messageAction')
+const messages = require('./message')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -26,6 +27,21 @@ server.listen(3000, async () => {
     })
     global.PendingMessages.sync({force: false}).then(() => {
         console.log('Pending table created')
+    })
+
+    global.room.on('peer joined', (cid) => {
+        global.PendingMessages.findAll({
+            where: {
+                recipient: cid
+            }
+        }).then((res) => {
+            console.log("List of messages = " + JSON.stringify(res))
+            if(res.length != 0) {
+                for (let message of res) {
+                    messages.sendMessageToUser(message, cid)
+                }
+            }
+        })
     })
 
     global.room.on("message" , (message)=>{
