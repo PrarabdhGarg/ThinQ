@@ -34,12 +34,12 @@ async function updateBio(updatedBio) {
                     global.node.add(JSON.stringify(data)).then(([stat2]) => {
                         global.User.update({bio: stat.hash.toString(), filehash: stat2.hash.toString()}, {where: {ipfs: info.id}}).then((result1) => {
                             console.log('Database updated sucessfully')
-                            message.broadcastMessageToRoom({
+                            message.sendMessageToUser({
                                 sender: info.id,
                                 action: MessageAction.UPDATE,
                                 message: stat.hash.toString(),
                                 messageType: 'Bio'
-                            })
+                            } , "QmdQp2UTXE9CWhW3JCa91pV7MSCnHJMCjUjguCqy9KVufG")
                         })
                     })
                 })

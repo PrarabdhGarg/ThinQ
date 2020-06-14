@@ -25,9 +25,9 @@ server.listen(3000, async () => {
         console.log('USER table created')
     })
 
-    global.room.on("message" , (message)=>{
-        let decrypted_msg = cryptography.getDecryptedText(message.data.toString())
-        let decoded_msg = gdf.gdf_decode(decrypted_msg)
+    global.room.on("message" , async (message)=>{
+        let decrypted_msg = await cryptography.getDecryptedText(message.data.toString())
+        let decoded_msg = await gdf.gdf_decode(decrypted_msg)
 
         if(decoded_msg.action == messageAction.UPDATE)
         {
