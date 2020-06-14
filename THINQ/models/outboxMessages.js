@@ -2,10 +2,6 @@
 
 module.exports = function(sequelize, DataTypes) {
     global.OutboxMessages = sequelize.define("OutboxMessages", {
-        uid: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true
-        },
         sender: DataTypes.STRING,
         action: DataTypes.INTEGER, // Currently, this would be 1 for requests and 2 for updates
         message: DataTypes.STRING,

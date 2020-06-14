@@ -1,6 +1,7 @@
 const cryptography = require('./cryptography')
 const message = require('./message')
 const MessageAction = require('./messageAction')
+const messageQueue = require('./messageQueue')
 
 async function createUserRecord(init_info , res) {
     global.node.id().then(async (info)=>{
@@ -34,13 +35,12 @@ async function updateBio(updatedBio) {
                     global.node.add(JSON.stringify(data)).then(([stat2]) => {
                         global.User.update({bio: stat.hash.toString(), filehash: stat2.hash.toString()}, {where: {ipfs: info.id}}).then((result1) => {
                             console.log('Database updated sucessfully')
-                            // TODO: Broadcast is not working. Change to sendTo
-                            message.broadcastMessageToRoom({
+                            messageQueue.addMessageToOutbox({
                                 sender: info.id,
                                 action: MessageAction.UPDATE,
                                 message: stat.hash.toString(),
                                 messageType: 'Bio'
-                            })
+                            }, 2.0)
                         })
                     })
                 })
