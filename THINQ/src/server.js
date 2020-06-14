@@ -24,9 +24,6 @@ server.listen(3000, async () => {
     global.User.sync({force: false}).then(() => {
         console.log('USER table created')
     })
-    global.OutboxMessages.sync({force: false}).then(() => {
-        console.log('Outbox table created')
-    })
     global.PendingMessages.sync({force: false}).then(() => {
         console.log('Pending table created')
     })
