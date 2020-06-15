@@ -147,4 +147,20 @@ router.get('/updateType' , (req , res)=>{
     })
 })
 
+router.post('/deleteRequest' , (req , res)=>{
+    global.User.findOne({where: {name:req.body.sender}}).then((sender)=>{
+        global.SentRequest.destroy({where: {sender: sender.dataValues.ipfs}}).then((result)=>{
+            global.node.id().then((info)=>{
+                message.sendMessageToUser({
+                    sender: info.id,
+                    recipient: sender.dataValues.ipfs,
+                    action: messageAction.DELETE
+                } , sender.dataValues.ipfs).then((result)=>{
+                    res.json({success : true})
+                })
+            })
+        })
+    })
+})
+
 module.exports = router

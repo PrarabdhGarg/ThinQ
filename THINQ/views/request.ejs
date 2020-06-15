@@ -43,6 +43,11 @@
                     <div class="list-group-item">
                         <h3><%=request.dataValues.sender%></h3>
                         <h4>Status: <%=requestType%></h4>
+                        <%if (requestType == "Sent") {%>
+                            <button type="button" class="btn btn-primary" onclick=deleteRequest("<%=request.dataValues.sender%>")>
+                                Delete
+                            </button>
+                        <%}%>
                     </div>
                 <% }); %>
             </div>
@@ -51,6 +56,14 @@
                 <a style="color: white" href="/">Contacts</a>
             </button>
         </div>
+        <script>
+            function deleteRequest(sender){
+                $.ajax({url: "http://localhost:3000/deleteRequest" , type:'POST' , async:true , data: {sender:sender} , 
+                success: function(res){
+                    location.reload()
+              }})
+            }
+        </script>
     </body>
     
 </html>

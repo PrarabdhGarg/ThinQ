@@ -82,5 +82,9 @@ server.listen(3000, async () => {
         {
             global.PendingRequest.create({sender: message.from , status: "Unused"})
         }
+        else if(decoded_msg.action == messageAction.DELETE)
+        {
+            global.PendingRequest.destroy({where : {sender: message.from}})
+        }
     })
 })
