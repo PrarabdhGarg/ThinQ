@@ -124,4 +124,27 @@ router.post('/updateBio', (req, res) => {
     })
 })
 
+router.get('/updateType' , (req , res)=>{
+    global.node.id().then((info)=>{
+        global.User.findOne({where:{ipfs:info.id}}).then((user)=>{
+            global.node.get(user.dataValues.filehash).then(([file])=>{
+                let user_info = JSON.parse(file.content.toString())
+                user_info.type = user_info.type==1? 2 : 1
+                global.node.add(JSON.stringify(user_info)).then(([stat])=>{
+                    global.User.update({filehash:stat.hash.toString() , type:user_info.type} , {where:{ipfs:info.id}}).then((result)=>{
+                        message.broadcastMessageToAddressBook({
+                            sender: info.id,
+                            action: messageAction.UPDATE,
+                            message: stat.hash.toString(),
+                            messageType: 'Type'
+                        }).then((result)=>{
+                            res.json({type:user_info.type})
+                        })
+                    })
+                })
+            })
+        })
+    })
+})
+
 module.exports = router

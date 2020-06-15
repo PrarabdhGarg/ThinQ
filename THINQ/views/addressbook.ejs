@@ -37,7 +37,11 @@
         <div class="container" style="padding-top:2%; ">
             <div style="font-family: 'Josefin Sans', sans-serif;">
                 <h2 id="name"><%=name%></h2>
-                <h4 id="usertype"><%=type==1?"Service Provider" : "Consumer"%></h4>
+                <h4 id="usertype"><%=type==1?"Service Provider" : "Consumer"%> &nbsp;
+                  <button type="button" class="btn btn-primary" onclick=switchUserType()>
+                    Switch
+                  </button>
+                </h4>
                 <h6 id="ID">Your ID: <%=filehash%></h6>
                 <button type="button" class="btn btn-primary" >
                     <a style="color: white" href="/sentRequests">View Sent Requests</a>
@@ -176,6 +180,13 @@
                 }, success: function(res){
                     $("#reqSuc").modal({keyboard: true})
                 }})
+            }
+
+            function switchUserType(){
+              $.ajax({url: "http://localhost:3000/updateType" , type:'GET' , async:true , 
+              success: function(res){
+                location.reload()
+              }})
             }
         </script>
     </body>

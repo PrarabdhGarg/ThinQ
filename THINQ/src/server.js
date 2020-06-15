@@ -69,6 +69,8 @@ server.listen(3000, async () => {
                         update['bio'] = data.bio
                     else if(decoded_msg.messageType == 'PublicKey')
                         update['publicKey'] = data.PublicKey
+                    else if(decoded_msg.messageType == 'Type')
+                        update['type'] = data.type
 
                     global.User.update(update , {where: {ipfs:message.from}}).then((res)=>{
                         console.log("DataBase Updated Sucessfully")
