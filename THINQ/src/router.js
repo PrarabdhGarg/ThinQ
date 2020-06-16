@@ -136,19 +136,25 @@ router.get('/getAddress' , async function(req , res){
         if(contacts.length==0)
             res.json([])
         for(let i=0 ; i<contacts.length ; i++) {
-            documentPath = '/ratings/' + contacts[i].ipfs + '.txt'
+            documentPath = '/ratings/' + contacts[i].ipfs.toString() + '.txt'
             contacts[i] = contacts[i].dataValues
             promises.push(global.node.get(contacts[i].bio))
+            console.log("DocumentPath is:",contacts[i].ipfs)
             global.node.files.read(documentPath
             , (err, res) => {
                 if(err) {
-                    // console.log("Entering error block")
-                   responses.push(Promise.resolve(String("0|0")))
-                   flag=1
+                    // console.log("Error is:",err.toString())
+                //    responses.push(Promise.resolve(String("0|0")))
+                //    flag=1
+                    global.node.files.write(documentPath, Buffer.from('0|0'), {
+                    create: true,
+                    parents: true
+                    })
+                    responses.push(global.node.files.read(documentPath))
                } 
                else {
                 responses.push(res)
-                flag=0
+                // flag=0
                }
                })
             // responses.push(global.node.files.read(documentPath))
@@ -169,8 +175,11 @@ router.get('/getAddress' , async function(req , res){
                 // else
                 // {
                 // console.log("Enterting else condition bio")
-                if(results[i]==undefined)
-                final_rating="0"
+                if(results[i]===undefined)
+                {   
+                    // console.log("Enterting else condition bio")             
+                    final_rating="0"
+                }
                 else
                 {
                 console.log("The rating to bio is:",results[i].toString())
@@ -182,9 +191,9 @@ router.get('/getAddress' , async function(req , res){
                 contacts[i].rating = final_rating.toString()
                 // console.log("Saved Rating:",contacts[i].rating)
                 }
-            contacts = contacts.filter((value , index , arr)=>{
-                return !(value.ipfs==nodeid.id)
-            })
+            // contacts = contacts.filter((value , index , arr)=>{
+            //     return !(value.ipfs==nodeid.id)
+            // })
             res.json(contacts)
         })
         })
@@ -289,49 +298,79 @@ router.post('/createcRequest' , function(req , res){
 router.post('/sp_ack_cRequest' , function(req , res){
     global.User.findOne({where: {name:req.body.sender}}).then((sender)=>{
         console.log("The reciever file name is:",sender.dataValues.ipfs)
-        documentPath = '/ratings/' + sender.dataValues.ipfs + '.txt'
+        documentPath = '/ratings/' + sender.dataValues.ipfs.toString() + '.txt'
+        console.log("Document path is ack is",documentPath)
         let prevrating
         let flag
         let promises = []
-            promises.push(global.node.files.read(documentPath))
-            Promise.all(promises).then((results)=>{
-                    console.log("Reults are",results[0].toString())
-                    prevrating=results[0].toString()
-                    if(prevrating !== undefined)
-                    {   
-                        console.log("Entering if condition")
-                        console.log("previous rating is:",parseFloat((prevrating.split("|")[0])))
-                        console.log("Rating provided is:",parseInt(req.body.userRating))
-                        rating=(parseFloat((prevrating.split("|")[0])*parseInt(prevrating.split("|")[1])+parseInt(req.body.userRating)))/(parseInt(prevrating.split("|")[1])+1)
-                        transactions=parseInt(prevrating.split("|")[1])+1
-                        console.log("New rating is:",rating)
-                        console.log("transaction number is",transactions)
-                    }
-                    else
-                    {   
-                        console.log("Entering else condition")
+            // promises.push(global.node.files.read(documentPath))
+            global.node.files.read(documentPath
+                , (err, res) => {
+                    if(err) {
                         rating=req.body.userRating
                         transactions=1
-                    }
-                    global.node.files.write(documentPath, Buffer.from(rating + '|' + transactions), {
-                        create: true,
-                        parents: true
-                        }, (err, res) => {
-                         if(err) {
-                            console.log("Error in inserting file " + err.message)
-                        } 
-                        else {
-                        global.node.files.stat(documentPath, (err, respon) => {
-                        if(err) {
-                            console.log("Error in inserting rating" + err.message)
+                        global.node.files.write(documentPath, Buffer.from(rating + '|' + transactions), {
+                            create: true,
+                            parents: true
+                            }, (err, res) => {
+                             if(err) {
+                                console.log("--------------------------Error in inserting file " + err.message)
+                            } 
+                            else {
+                            global.node.files.stat(documentPath, (err, respon) => {
+                            if(err) {
+                                console.log("Error in inserting rating" + err.message)
+                            }
+                            console.log('Stat Result = ' + JSON.stringify(respon))
+                            hash = respon.hash
+                            console.log('File Hash = ' + hash)
+                            })
+                            }
+                            })
+                   } 
+                   else {
+                    promises.push(res)
+                    // flag=0
+                    Promise.all(promises).then((results)=>{
+                        console.log("Reults are",results[0].toString())
+                        prevrating=results[0].toString()
+                        if(prevrating !== undefined)
+                        {   
+                            console.log("Entering if condition")
+                            console.log("previous rating is:",parseFloat((prevrating.split("|")[0])))
+                            console.log("Rating provided is:",parseInt(req.body.userRating))
+                            rating=(parseFloat((prevrating.split("|")[0])*parseInt(prevrating.split("|")[1])+parseInt(req.body.userRating)))/(parseInt(prevrating.split("|")[1])+1)
+                            transactions=parseInt(prevrating.split("|")[1])+1
+                            console.log("New rating is:",rating)
+                            console.log("transaction number is",transactions)
                         }
-                        console.log('Stat Result = ' + JSON.stringify(respon))
-                        hash = respon.hash
-                        console.log('File Hash = ' + hash)
-                        })
+                        else
+                        {   
+                            console.log("Entering else condition")
+                            rating=req.body.userRating
+                            transactions=1
                         }
-                        })
-            })
+                        global.node.files.write(documentPath, Buffer.from(rating + '|' + transactions), {
+                            create: true,
+                            parents: true
+                            }, (err, res) => {
+                             if(err) {
+                                console.log("Error in inserting file " + err.message)
+                            } 
+                            else {
+                            global.node.files.stat(documentPath, (err, respon) => {
+                            if(err) {
+                                console.log("Error in inserting rating" + err.message)
+                            }
+                            console.log('Stat Result = ' + JSON.stringify(respon))
+                            hash = respon.hash
+                            console.log('File Hash = ' + hash)
+                            })
+                            }
+                            })
+                })
+                   }
+                   })
     global.ClosedRequest.update({status:"sp_ack"},{where: {sender:sender.dataValues.ipfs , status: "created"}}).then((result)=>{   
         global.node.id().then((info)=>{
             message.sendMessageToUser({
@@ -349,49 +388,119 @@ router.post('/sp_ack_cRequest' , function(req , res){
 router.post('/c_ack_cRequest' , function(req , res){
     global.User.findOne({where: {name:req.body.sender}}).then((sender)=>{
         console.log("The reciever file name is:",sender.dataValues.ipfs)
-        documentPath = '/ratings/' + sender.dataValues.ipfs + '.txt'
+        documentPath = '/ratings/' + sender.dataValues.ipfs.toString() + '.txt'
+        console.log("Document path is ack is",documentPath)
         let prevrating
         let flag
         let promises = []
-            promises.push(global.node.files.read(documentPath))
-            Promise.all(promises).then((results)=>{
-                    console.log("Reults are",results[0].toString())
-                    prevrating=results[0].toString()
-                    if(prevrating !== undefined)
-                    {   
-                        console.log("Entering if condition")
-                        console.log("previous rating is:",parseFloat((prevrating.split("|")[0])))
-                        console.log("Rating provided is:",parseInt(req.body.userRating))
-                        rating=(parseFloat((prevrating.split("|")[0])*parseInt(prevrating.split("|")[1])+parseInt(req.body.userRating)))/(parseInt(prevrating.split("|")[1])+1)
-                        transactions=parseInt(prevrating.split("|")[1])+1
-                        console.log("New rating is:",rating)
-                        console.log("transaction number is",transactions)
-                    }
-                    else
-                    {   
-                        console.log("Entering else condition")
+            // promises.push(global.node.files.read(documentPath))
+            global.node.files.read(documentPath
+                , (err, res) => {
+                    if(err) {
                         rating=req.body.userRating
                         transactions=1
-                    }
-                    global.node.files.write(documentPath, Buffer.from(rating + '|' + transactions), {
-                        create: true,
-                        parents: true
-                        }, (err, res) => {
-                         if(err) {
-                            console.log("Error in inserting file " + err.message)
-                        } 
-                        else {
-                        global.node.files.stat(documentPath, (err, respon) => {
-                        if(err) {
-                            console.log("Error in inserting rating" + err.message)
+                        global.node.files.write(documentPath, Buffer.from(rating + '|' + transactions), {
+                            create: true,
+                            parents: true
+                            }, (err, res) => {
+                             if(err) {
+                                console.log("--------------------------Error in inserting file " + err.message)
+                            } 
+                            else {
+                            global.node.files.stat(documentPath, (err, respon) => {
+                            if(err) {
+                                console.log("Error in inserting rating" + err.message)
+                            }
+                            console.log('Stat Result = ' + JSON.stringify(respon))
+                            hash = respon.hash
+                            console.log('File Hash = ' + hash)
+                            })
+                            }
+                            })
+                   } 
+                   else {
+                    promises.push(res)
+                    // flag=0
+                    Promise.all(promises).then((results)=>{
+                        console.log("Reults are",results[0].toString())
+                        prevrating=results[0].toString()
+                        if(prevrating !== undefined)
+                        {   
+                            console.log("Entering if condition")
+                            console.log("previous rating is:",parseFloat((prevrating.split("|")[0])))
+                            console.log("Rating provided is:",parseInt(req.body.userRating))
+                            rating=(parseFloat((prevrating.split("|")[0])*parseInt(prevrating.split("|")[1])+parseInt(req.body.userRating)))/(parseInt(prevrating.split("|")[1])+1)
+                            transactions=parseInt(prevrating.split("|")[1])+1
+                            console.log("New rating is:",rating)
+                            console.log("transaction number is",transactions)
                         }
-                        console.log('Stat Result = ' + JSON.stringify(respon))
-                        hash = respon.hash
-                        console.log('File Hash = ' + hash)
-                        })
+                        else
+                        {   
+                            console.log("Entering else condition")
+                            rating=req.body.userRating
+                            transactions=1
                         }
-                        })
-            })
+                        global.node.files.write(documentPath, Buffer.from(rating + '|' + transactions), {
+                            create: true,
+                            parents: true
+                            }, (err, res) => {
+                             if(err) {
+                                console.log("Error in inserting file " + err.message)
+                            } 
+                            else {
+                            global.node.files.stat(documentPath, (err, respon) => {
+                            if(err) {
+                                console.log("Error in inserting rating" + err.message)
+                            }
+                            console.log('Stat Result = ' + JSON.stringify(respon))
+                            hash = respon.hash
+                            console.log('File Hash = ' + hash)
+                            })
+                            }
+                            })
+                })
+                   }
+                   })
+                // responses.push(global.node.files.read(documentPath))
+            
+            // Promise.all(promises).then((results)=>{
+            //         console.log("Reults are",results[0].toString())
+            //         prevrating=results[0].toString()
+            //         if(prevrating !== undefined)
+            //         {   
+            //             console.log("Entering if condition")
+            //             console.log("previous rating is:",parseFloat((prevrating.split("|")[0])))
+            //             console.log("Rating provided is:",parseInt(req.body.userRating))
+            //             rating=(parseFloat((prevrating.split("|")[0])*parseInt(prevrating.split("|")[1])+parseInt(req.body.userRating)))/(parseInt(prevrating.split("|")[1])+1)
+            //             transactions=parseInt(prevrating.split("|")[1])+1
+            //             console.log("New rating is:",rating)
+            //             console.log("transaction number is",transactions)
+            //         }
+            //         else
+            //         {   
+            //             console.log("Entering else condition")
+            //             rating=req.body.userRating
+            //             transactions=1
+            //         }
+            //         global.node.files.write(documentPath, Buffer.from(rating + '|' + transactions), {
+            //             create: true,
+            //             parents: true
+            //             }, (err, res) => {
+            //              if(err) {
+            //                 console.log("Error in inserting file " + err.message)
+            //             } 
+            //             else {
+            //             global.node.files.stat(documentPath, (err, respon) => {
+            //             if(err) {
+            //                 console.log("Error in inserting rating" + err.message)
+            //             }
+            //             console.log('Stat Result = ' + JSON.stringify(respon))
+            //             hash = respon.hash
+            //             console.log('File Hash = ' + hash)
+            //             })
+            //             }
+            //             })
+            // })
         global.ClosedRequest.update({status:"c_ack"},{where: {sender:sender.dataValues.ipfs , status: "sp_ack"}}).then((result)=>{    
         global.node.id().then((info)=>{
             message.sendMessageToUser({

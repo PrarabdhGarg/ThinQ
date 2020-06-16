@@ -48,6 +48,11 @@ server.listen(3000, async () => {
                 for (let message of res) {
                     messages.sendMessageToUser(message, cid)
                 }
+                global.PendingMessages.destroy({
+                    where: {
+                        id: message.id
+                    }
+                })
             }
         })
     })
