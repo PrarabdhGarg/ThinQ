@@ -5,7 +5,8 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER, //1 for Service Provider and 2 for Consumer
       bio: DataTypes.STRING ,
       publicKey: DataTypes.STRING,
-      filehash: DataTypes.STRING
+      filehash: DataTypes.STRING,
+      rating:DataTypes.STRING
     })
     return User
 }

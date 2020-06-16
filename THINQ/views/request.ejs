@@ -23,8 +23,39 @@
             .list-group-item:hover{
                 background-color: rgb(240, 236, 236);
             }
+            
+            .rating {
+                float:left;
+                width:300px;
+            }
+            .rating span { float:right; position:relative; }
+            .rating span input {
+            position:absolute;
+            top:0px;
+            left:0px;
+            opacity:0;
+            }
+            .rating span label {
+            display:inline-block;
+            width:30px;
+            height:30px;
+            text-align:center;
+            color:#FFF;
+            background:#ccc;
+            font-size:30px;
+            margin-right:2px;
+            line-height:30px;
+            border-radius:50%;
+            -webkit-border-radius:50%;
+            }
+            .rating span:hover ~ span label,
+            .rating span:hover label,
+            .rating span.checked label,
+            .rating span.checked ~ span label {
+            background:#F90;
+            color:#FFF;
+            }
         </style>
-
     </head>
 
     <body>
@@ -43,6 +74,78 @@
                     <div class="list-group-item">
                         <h3><%=request.dataValues.sender%></h3>
                         <h4>Status: <%=requestType%></h4>
+                        <%if (requestType == "Sent") {%>
+                            <button type="button" class="btn btn-primary" onclick=deleteRequest("<%=request.dataValues.sender%>")>
+                                Delete
+                            </button>
+                            &nbsp;
+                        <%}%>
+                        <%if (requestType == "Sent") {%>
+                            <button type="button" class="btn btn-primary" onclick=createcRequest("<%=request.dataValues.sender%>") >
+                                Close Request
+                            </button>
+                            &nbsp;
+                        <%}%>
+                        <%if (requestType == "CreatedSP") {%>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#spacknowledge">
+                                Acknowledge
+                            </button>
+                            &nbsp;
+                        <%}%>
+                        <div class="modal fade" id="spacknowledge" tabindex="-1" role="dialog" aria-labelledby="spacknowledge" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="spacknowledgeTitle">Please provide rating to the consumer</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="rating">
+                                        <span><input type="radio" name="rating" id="str5" value="5"><label for="str5"></label></span>
+                                        <span><input type="radio" name="rating" id="str4" value="4"><label for="str4"></label></span>
+                                        <span><input type="radio" name="rating" id="str3" value="3"><label for="str3"></label></span>
+                                        <span><input type="radio" name="rating" id="str2" value="2"><label for="str2"></label></span>
+                                        <span><input type="radio" name="rating" id="str1" value="1"><label for="str1"></label></span>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-primary" data-dismiss="modal" onclick=spackRequest("<%=request.dataValues.sender%>")>Give Rating</button>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                        <%if (requestType == "SP_Acknowledged") {%>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#cacknowledge">
+                                Acknowledge
+                            </button>
+                            &nbsp;
+                        <%}%>
+                        <div class="modal fade" id="cacknowledge" tabindex="-1" role="dialog" aria-labelledby="cacknowledge" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="cacknowledgeTitle">Please provide rating to the SP first</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="rating">
+                                        <span><input type="radio" name="rating" id="str5" value="5"><label for="str5"></label></span>
+                                        <span><input type="radio" name="rating" id="str4" value="4"><label for="str4"></label></span>
+                                        <span><input type="radio" name="rating" id="str3" value="3"><label for="str3"></label></span>
+                                        <span><input type="radio" name="rating" id="str2" value="2"><label for="str2"></label></span>
+                                        <span><input type="radio" name="rating" id="str1" value="1"><label for="str1"></label></span>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-primary" data-dismiss="modal" onclick=cackRequest("<%=request.dataValues.sender%>")>Give Rating</button>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
                     </div>
                 <% }); %>
             </div>
@@ -51,6 +154,50 @@
                 <a style="color: white" href="/">Contacts</a>
             </button>
         </div>
+        <script>
+            var userRating
+            $(document).ready(function(){
+            // Check Radio-box
+            $(".rating input:radio").attr("checked", false);
+
+            $('.rating input').click(function () {
+        $(".rating span").removeClass('checked');
+        $(this).parent().addClass('checked');
+         });
+
+            $('input:radio').change(
+            function(){
+            userRating = this.value;
+         }); 
+        });
+            function deleteRequest(sender){
+                $.ajax({url: "http://localhost:3000/deleteRequest" , type:'POST' , async:true , data: {sender:sender} , 
+                success: function(res){
+                    location.reload()
+              }})
+            }
+            function createcRequest(sender){
+                $.ajax({url: "http://localhost:3000/createcRequest" , type:'POST' , async:true , data: {sender:sender} , 
+                success: function(res){
+                    location.reload()
+              }})
+            }
+            function spackRequest(sender){
+                console.log("The rating is:",userRating)
+                $.ajax({url: "http://localhost:3000/sp_ack_cRequest" , type:'POST' , async:true , data: {sender:sender,userRating:userRating} , 
+                success: function(res){
+                    location.reload()
+              }})
+            }
+            function cackRequest(sender){
+                console.log("The rating is:",userRating)
+                $.ajax({url: "http://localhost:3000/c_ack_cRequest" , type:'POST' , async:true , data: {sender:sender,userRating:userRating} , 
+                success: function(res){
+                    location.reload()
+              }})
+            }
+        </script>
     </body>
     
 </html>
+

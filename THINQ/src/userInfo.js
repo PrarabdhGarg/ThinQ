@@ -39,7 +39,7 @@ async function updateBio(updatedBio) {
                                 action: MessageAction.UPDATE,
                                 message: stat.hash.toString(),
                                 messageType: 'Bio'
-                            } , "QmdQp2UTXE9CWhW3JCa91pV7MSCnHJMCjUjguCqy9KVufG")
+                            })
                         })
                     })
                 })

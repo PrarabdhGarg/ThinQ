@@ -34,7 +34,9 @@ server.listen(3000, async () => {
     global.PendingRequest.sync({force: false}).then(() => {
         console.log('Pending Request table created')
     })
-
+    global.ClosedRequest.sync({force: false}).then(() => {
+        console.log('Closed Request table created')
+    })
     global.room.on('peer joined', (cid) => {
         global.PendingMessages.findAll({
             where: {
@@ -74,6 +76,8 @@ server.listen(3000, async () => {
                         update['bio'] = data.bio
                     else if(decoded_msg.messageType == 'PublicKey')
                         update['publicKey'] = data.PublicKey
+                    else if(decoded_msg.messageType == 'Type')
+                        update['type'] = data.type
 
                     global.User.update(update , {where: {ipfs:message.from}}).then((res)=>{
                         console.log("DataBase Updated Sucessfully")
@@ -85,5 +89,23 @@ server.listen(3000, async () => {
         {
             global.PendingRequest.create({sender: message.from , status: "Unused"})
         }
+        else if(decoded_msg.action == messageAction.DELETE)
+        {
+            global.PendingRequest.destroy({where : {sender: message.from}})
+        }
+        else if(decoded_msg.action == messageAction.C_CREATE)
+        {
+            global.PendingRequest.destroy({where : {sender: message.from}})
+            global.ClosedRequest.create({sender:message.from,status:"created"})
+        }
+        else if(decoded_msg.action == messageAction.SP_ACK)
+        {
+            global.ClosedRequest.update({status:"sp_ack"},{where: {sender:message.from , status: "created"}})      
+        }
+        else if(decoded_msg.action == messageAction.C_ACK)
+        {
+            global.ClosedRequest.update({status:"c_ack"},{where: {sender:message.from , status: "sp_ack"}})
+        }
     })
 })
+
