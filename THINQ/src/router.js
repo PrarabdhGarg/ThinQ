@@ -132,37 +132,55 @@ router.get('/getAddress' , async function(req , res){
     global.User.findAll({}).then((contacts)=>{
         let promises = []
         let responses = []
+        let flag
         if(contacts.length==0)
             res.json([])
-
         for(let i=0 ; i<contacts.length ; i++) {
             documentPath = '/ratings/' + contacts[i].ipfs + '.txt'
             contacts[i] = contacts[i].dataValues
             promises.push(global.node.get(contacts[i].bio))
-            responses.push(global.node.files.read(documentPath))
+            global.node.files.read(documentPath
+            , (err, res) => {
+                if(err) {
+                    // console.log("Entering error block")
+                   responses.push(Promise.resolve(String("0|0")))
+                   flag=1
+               } 
+               else {
+                responses.push(res)
+                flag=0
+               }
+               })
+            // responses.push(global.node.files.read(documentPath))
         }
-
+        // if(flag==1)
+        // {
         Promise.all(promises).then((bios)=>{
             Promise.all(responses).then((results)=>{
             for(let i=0; i<contacts.length ; i++)
                 {
                 contacts[i].bio = bios[i][0].content.toString()
                 let final_rating
-                if(results[i][0]==undefined)
-                {
-                    console.log("Enterting if condition bio")
-                    final_rating='0'
-                }
+                // if(results[i][0]==undefined)
+                // {
+                //     console.log("Enterting if condition bio")
+                //     final_rating='0'
+                // }
+                // else
+                // {
+                // console.log("Enterting else condition bio")
+                if(results[i]==undefined)
+                final_rating="0"
                 else
                 {
-                console.log("Enterting else condition bio")
                 console.log("The rating to bio is:",results[i].toString())
                 rating=results[i].toString()
                 final_rating=rating.split("|")[0]
-                console.log("Final_rating:",final_rating)
+                // console.log("Final_rating:",final_rating)
                 }
+                // }
                 contacts[i].rating = final_rating.toString()
-                console.log("Saved Rating:",contacts[i].rating)
+                // console.log("Saved Rating:",contacts[i].rating)
                 }
             contacts = contacts.filter((value , index , arr)=>{
                 return !(value.ipfs==nodeid.id)
