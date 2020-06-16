@@ -50,6 +50,22 @@
                 <button style='display: <%=type==1?"inline-block" : "none"%>' type="button" class="btn btn-primary" >
                     <a style='color: white;' href="/pendingRequests">View Pending Requests</a>
                 </button>
+                &nbsp;
+                <button style='display: <%=type!=1?"inline-block": "none"%>' type="button" class="btn btn-primary" >
+                    <a style='color: white;' href="/cRequests">Created close requests</a>
+                </button>
+                &nbsp;
+                <button style='display: <%=type==1?"inline-block": "none"%>' type="button" class="btn btn-primary" >
+                  <a style='color: white;' href="/c_sp_Requests">Acknowledge Close Requests</a>
+              </button>
+              &nbsp;
+                <button style='display: <%=type!=1?"inline-block" : "none"%>' type="button" class="btn btn-primary" >
+                  <a style='color: white;' href="/spackRequests">Acknowledge Close Requests</a>
+              </button>
+              &nbsp;
+                <button type="button" class="btn btn-primary" >
+                  <a style='color: white;' href="/cackRequests">View Resolved Requests</a>
+              </button>
             </div>
             <hr>
             <div>
@@ -166,7 +182,8 @@
                 let item = `<div class="list-group-item">
                     <h3>${res.name}</h3>
                     <p>${res.type==1?"Service Provider" : "Consumer"}</p>
-                    <p>${res.bio}</p>`
+                    <p>${res.bio}</p>
+                    <p>Rating:${res.rating}</p>`
                 if(res.type == 1)
                     item = item + `<button type="button" class="btn btn-primary" onclick=addRequest("${res.ipfs}")>Ask for service</button>`
                 item = item + `</div>`
