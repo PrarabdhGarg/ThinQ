@@ -117,6 +117,12 @@
                             </button>
                             &nbsp;
                         <%}%>
+                        <%if (requestType == "Pending") {%>
+                            <button type="button" class="btn btn-primary" onclick=spcreatecRequest("<%=request.dataValues.sender%>") >
+                                Close Request
+                            </button>
+                            &nbsp;
+                        <%}%>
                         <%if (requestType == "CreatedSP") {%>
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#spacknowledge">
                                 Acknowledge
@@ -200,6 +206,8 @@
             function(){
             userRating = this.value;
          });
+        });
+        $(document).ready(function(){
          $(".rating1 input:radio").attr("checked", false);
 
     $('.rating1 input').click(function () {
@@ -211,7 +219,8 @@
     function(){         
     userRating1 = this.value;
 });
-        });
+});
+        
             function deleteRequest(sender){
                 $.ajax({url: "http://localhost:3000/deleteRequest" , type:'POST' , async:true , data: {sender:sender} , 
                 success: function(res){
@@ -220,6 +229,12 @@
             }
             function createcRequest(sender){
                 $.ajax({url: "http://localhost:3000/createcRequest" , type:'POST' , async:true , data: {sender:sender} , 
+                success: function(res){
+                    location.reload()
+              }})
+            }
+            function spcreatecRequest(sender){
+                $.ajax({url: "http://localhost:3000/spcreatecRequest" , type:'POST' , async:true , data: {sender:sender} , 
                 success: function(res){
                     location.reload()
               }})

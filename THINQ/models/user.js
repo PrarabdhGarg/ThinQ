@@ -6,7 +6,8 @@ module.exports = function(sequelize, DataTypes) {
       bio: DataTypes.STRING ,
       publicKey: DataTypes.STRING,
       filehash: DataTypes.STRING,
-      rating:DataTypes.STRING
+      rating:DataTypes.STRING,
+      ratinghash:DataTypes.STRING
     })
     return User
 }

@@ -106,6 +106,11 @@ server.listen(3000, async () => {
         {
             global.ClosedRequest.update({status:"c_ack"},{where: {sender:message.from , status: "sp_ack"}})
         }
+        else if(decoded_msg.action == messageAction.SP_C_CREATE)
+        {
+            global.SentRequest.destroy({where : {sender: message.from}})
+            global.ClosedRequest.create({sender:message.from,status:"sp_ack"})
+        }
     })
 })
 
