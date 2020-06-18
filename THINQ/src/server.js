@@ -87,7 +87,19 @@ server.listen(3000, async () => {
         }
         else if(decoded_msg.action == messageAction.REQUEST)
         {
-            global.PendingRequest.create({sender: message.from , status: "Unused"})
+            global.User.findOne({where: {
+                ipfs: message.from
+            }}).then((user) => {
+                let rating = 0
+                console.log('Rating = ' + JSON.stringify(user))
+                try {
+                    rating = parseFloat(user.dataValues.rating)
+                } catch(e) {
+                    rating = 0
+                }
+                console.log('Rating = ' + rating.toString())
+                global.PendingRequest.create({sender: message.from , status: "Unused", rating: rating})
+            })
         }
         else if(decoded_msg.action == messageAction.DELETE)
         {

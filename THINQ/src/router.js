@@ -2,7 +2,8 @@ const express = require('express');
 var router = express.Router();
 const userInfo = require('./userInfo')
 const messageAction = require('./messageAction')
-const message = require('./message')
+const message = require('./message');
+const { sequelize } = require('../models/database');
 
 router.get('/' , function(req, res) {
     global.node.id().then((info)=>{
@@ -96,7 +97,11 @@ router.get('/cackRequests' , (req , res)=>{
 })
 
 router.get('/pendingRequests' , (req , res)=>{
-    global.PendingRequest.findAll({}).then((requests)=>{
+    global.PendingRequest.findAll({
+        order: [
+            ['priority']
+        ]
+    }).then((requests)=>{
         let promises = []
         for(request of requests)
             promises.push(global.User.findOne({where: {ipfs:request.dataValues.sender}}))
