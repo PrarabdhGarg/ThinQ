@@ -100,16 +100,103 @@ server.listen(3000, async () => {
         }
         else if(decoded_msg.action == messageAction.SP_ACK)
         {
-            global.ClosedRequest.update({status:"sp_ack"},{where: {sender:message.from , status: "created"}})      
+            global.ClosedRequest.update({status:"sp_ack"},{where: {sender:message.from , status: "created"}})
+            global.node.id().then((info)=>{
+                documentPath='/ratings/' + info.id.toString() + '.txt'
+            global.node.files.write(documentPath, Buffer.from(info.id.toString()+'|'+decoded_msg.rating+'|'+decoded_msg.transact), {
+                create: true,
+                parents: true
+                }, (err, res) => {
+                 if(err) {
+                    console.log("--------------------------Error in inserting file " + err.message)
+                } 
+                else {
+                global.node.files.stat(documentPath, (err, respon) => {
+                if(err) {
+                    // console.log("Error in inserting rating" + err.message)
+                }
+                console.log('Stat Result = ' + JSON.stringify(respon))
+                hash = respon.hash
+                console.log('File Hash = ' + hash)
+                    global.User.update({ratinghash:hash,rating:decoded_msg.rating},{where: {ipfs:info.id}}).then((result)=>{
+                        console.log("results of filehash is :",result)
+                    })
+                })
+            }
+                }) 
+
+            messages.broadcastMessageToAddressBook({
+                sender: info.id,
+                messageAction:RATE_UPDATE,
+                rating:decoded_msg.rating,
+                transact:decoded_msg.transact
+            })
+        })     
         }
         else if(decoded_msg.action == messageAction.C_ACK)
         {
             global.ClosedRequest.update({status:"c_ack"},{where: {sender:message.from , status: "sp_ack"}})
+            global.node.id().then((info)=>{
+                documentPath='/ratings/' + info.id.toString() + '.txt'
+            global.node.files.write(documentPath, Buffer.from(info.id.toString()+'|'+decoded_msg.rating+'|'+decoded_msg.transact), {
+                create: true,
+                parents: true
+                }, (err, res) => {
+                 if(err) {
+                    console.log("--------------------------Error in inserting file " + err.message)
+                } 
+                else {
+                global.node.files.stat(documentPath, (err, respon) => {
+                if(err) {
+                    // console.log("Error in inserting rating" + err.message)
+                }
+                console.log('Stat Result = ' + JSON.stringify(respon))
+                hash = respon.hash
+                console.log('File Hash = ' + hash)
+                    global.User.update({ratinghash:hash,rating:decoded_msg.rating},{where: {ipfs:info.id}}).then((result)=>{
+                        console.log("results of filehash is :",result)
+                    })
+                })
+            }
+                }) 
+
+            messages.broadcastMessageToAddressBook({
+                sender: info.id,
+                messageAction:RATE_UPDATE,
+                rating:decoded_msg.rating,
+                transact:decoded_msg.transact
+            })
+        })   
         }
         else if(decoded_msg.action == messageAction.SP_C_CREATE)
         {
             global.SentRequest.destroy({where : {sender: message.from}})
             global.ClosedRequest.create({sender:message.from,status:"sp_ack"})
+        }
+        else if(decoded_msg.action == messageAction.RATE_UPDATE)
+        {
+            documentPath='/ratings/' + message.from.toString() + '.txt'
+            global.node.files.write(documentPath, Buffer.from(message.from.toString()+'|'+decoded_msg.rating+'|'+decoded_msg.transact), {
+                create: true,
+                parents: true
+                }, (err, res) => {
+                 if(err) {
+                    console.log("--------------------------Error in inserting file " + err.message)
+                } 
+                else {
+                global.node.files.stat(documentPath, (err, respon) => {
+                if(err) {
+                    // console.log("Error in inserting rating" + err.message)
+                }
+                console.log('Stat Result = ' + JSON.stringify(respon))
+                hash = respon.hash
+                console.log('File Hash = ' + hash)
+                    global.User.update({ratinghash:hash,rating:decoded_msg.rating.toString()},{where: {ipfs:message.from}}).then((result)=>{
+                        console.log("results of filehash is :",result)
+                    })
+                })
+            }
+            }) 
         }
     })
 })

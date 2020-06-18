@@ -203,6 +203,9 @@ router.get('/getAddress' , async function(req , res){
                 contacts[i].bio = bios[i][0].content.toString()
                 console.log("Rating passed form getAddress final is:",contacts[i].rating)
                 }
+                // contacts = contacts.filter((value , index , arr)=>{
+                //     return !(value.ipfs==nodeid.id)
+                // })
             res.json(contacts)
         
         })
@@ -310,6 +313,8 @@ router.post('/sp_ack_cRequest' , function(req , res){
         console.log("Document path is ack is",documentPath)
         let prevrating
         let flag
+        let rating
+        let transactions
         let promises = []
             // promises.push(global.node.files.read(documentPath))
             documentPath = '/ratings/' + sender.dataValues.ipfs.toString() + '.txt'
@@ -388,7 +393,9 @@ router.post('/sp_ack_cRequest' , function(req , res){
             message.sendMessageToUser({
                 sender: info.id,
                 recipient: sender.dataValues.ipfs,
-                action: messageAction.SP_ACK
+                action: messageAction.SP_ACK,
+                rating:rating.toString(),
+                transact:transactions.toString()
             } , sender.dataValues.ipfs).then((result)=>{
                 res.json({success : true})
             })
@@ -404,6 +411,8 @@ router.post('/c_ack_cRequest' , function(req , res){
         console.log("Document path is ack is",documentPath)
         let prevrating
         let flag
+        let rating
+        let transactions
         let promises = []
             // promises.push(global.node.files.read(documentPath))
             global.node.files.read(documentPath
@@ -521,7 +530,9 @@ router.post('/c_ack_cRequest' , function(req , res){
             message.sendMessageToUser({
                 sender: info.id,
                 recipient: sender.dataValues.ipfs,
-                action: messageAction.C_ACK
+                action: messageAction.C_ACK,
+                rating:rating.toString(),
+                transact:transactions.toString()
             } , sender.dataValues.ipfs).then((result)=>{
                 res.json({success : true})
             })
