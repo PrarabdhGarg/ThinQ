@@ -49,7 +49,7 @@ router.get('/cRequests' , (req , res)=>{
 })
 
 router.get('/c_sp_Requests' , (req , res)=>{
-    global.ClosedRequest.findAll({where: {status: "created"}}).then((requests)=>{
+    global.ClosedRequest.findAll({where: {status: "created",display:"2"}}).then((requests)=>{
         let promises = []
         for(request of requests)
             promises.push(global.User.findOne({where: {ipfs:request.dataValues.sender}}))
@@ -65,7 +65,7 @@ router.get('/c_sp_Requests' , (req , res)=>{
 })
 
 router.get('/spackRequests' , (req , res)=>{
-    global.ClosedRequest.findAll({where: {status: "sp_ack"}}).then((requests)=>{
+    global.ClosedRequest.findAll({where: {status: "sp_ack",display:"2"}}).then((requests)=>{
         let promises = []
         for(request of requests)
             promises.push(global.User.findOne({where: {ipfs:request.dataValues.sender}}))
@@ -297,7 +297,7 @@ router.post('/deleteRequest' , (req , res)=>{
 router.post('/createcRequest' , function(req , res){
     global.User.findOne({where: {name:req.body.sender}}).then((sender)=>{
     global.SentRequest.destroy({where: {sender: sender.dataValues.ipfs}}).then((result)=>{
-    global.ClosedRequest.create({sender:sender.dataValues.ipfs , status: "created"}).then((result)=>{   
+    global.ClosedRequest.create({sender:sender.dataValues.ipfs , status: "created",display:"1"}).then((result)=>{   
         global.node.id().then((info)=>{
             message.sendMessageToUser({
                 sender: info.id,
@@ -393,7 +393,7 @@ router.post('/sp_ack_cRequest' , function(req , res){
                 })
                    }
                    })
-    global.ClosedRequest.update({status:"sp_ack"},{where: {sender:sender.dataValues.ipfs , status: "created"}}).then((result)=>{   
+    global.ClosedRequest.update({status:"sp_ack",display:"1"},{where: {sender:sender.dataValues.ipfs , status: "created"}}).then((result)=>{   
         global.node.id().then((info)=>{
             message.sendMessageToUser({
                 sender: info.id,
@@ -549,7 +549,7 @@ router.post('/c_ack_cRequest' , function(req , res){
 router.post('/spcreatecRequest' , function(req , res){
     global.User.findOne({where: {name:req.body.sender}}).then((sender)=>{
     global.PendingRequest.destroy({where: {sender: sender.dataValues.ipfs}}).then((result)=>{
-    global.ClosedRequest.create({sender:sender.dataValues.ipfs , status: "sp_ack"}).then((result)=>{   
+    global.ClosedRequest.create({sender:sender.dataValues.ipfs , status: "created",display:"2"}).then((result)=>{   
         global.node.id().then((info)=>{
             message.sendMessageToUser({
                 sender: info.id,

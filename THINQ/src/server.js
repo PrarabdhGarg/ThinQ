@@ -108,12 +108,13 @@ server.listen(3000, async () => {
         else if(decoded_msg.action == messageAction.C_CREATE)
         {
             global.PendingRequest.destroy({where : {sender: message.from}})
-            global.ClosedRequest.create({sender:message.from,status:"created"})
+            global.ClosedRequest.create({sender:message.from,status:"created",display:"2"})
         }
         else if(decoded_msg.action == messageAction.SP_ACK)
         {
-            global.ClosedRequest.update({status:"sp_ack"},{where: {sender:message.from , status: "created"}})
+            global.ClosedRequest.update({status:"sp_ack",display:"2"},{where: {sender:message.from , status: "created"}})
             global.node.id().then((info)=>{
+                console.log("------------------------server SP_ack infoid is:",info.id.toString())
                 documentPath='/ratings/' + info.id.toString() + '.txt'
             global.node.files.write(documentPath, Buffer.from(info.id.toString()+'|'+decoded_msg.rating+'|'+decoded_msg.transact), {
                 create: true,
@@ -139,7 +140,7 @@ server.listen(3000, async () => {
 
             messages.broadcastMessageToAddressBook({
                 sender: info.id,
-                messageAction:RATE_UPDATE,
+                messageAction:messageAction.RATE_UPDATE,
                 rating:decoded_msg.rating,
                 transact:decoded_msg.transact
             })
@@ -149,6 +150,7 @@ server.listen(3000, async () => {
         {
             global.ClosedRequest.update({status:"c_ack"},{where: {sender:message.from , status: "sp_ack"}})
             global.node.id().then((info)=>{
+                console.log("------------------------server C_ack infoid is:",info.id.toString())
                 documentPath='/ratings/' + info.id.toString() + '.txt'
             global.node.files.write(documentPath, Buffer.from(info.id.toString()+'|'+decoded_msg.rating+'|'+decoded_msg.transact), {
                 create: true,
@@ -174,7 +176,7 @@ server.listen(3000, async () => {
 
             messages.broadcastMessageToAddressBook({
                 sender: info.id,
-                messageAction:RATE_UPDATE,
+                messageAction:messageAction.RATE_UPDATE,
                 rating:decoded_msg.rating,
                 transact:decoded_msg.transact
             })
@@ -183,11 +185,12 @@ server.listen(3000, async () => {
         else if(decoded_msg.action == messageAction.SP_C_CREATE)
         {
             global.SentRequest.destroy({where : {sender: message.from}})
-            global.ClosedRequest.create({sender:message.from,status:"sp_ack"})
+            global.ClosedRequest.create({sender:message.from,status:"created",display:"1"})
         }
         else if(decoded_msg.action == messageAction.RATE_UPDATE)
         {
             documentPath='/ratings/' + message.from.toString() + '.txt'
+            console.log("------------------------server rateupdate id is:",message.from. toString())
             global.node.files.write(documentPath, Buffer.from(message.from.toString()+'|'+decoded_msg.rating+'|'+decoded_msg.transact), {
                 create: true,
                 parents: true
