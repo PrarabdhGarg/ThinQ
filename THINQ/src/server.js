@@ -114,8 +114,9 @@ server.listen(3000, async () => {
         {
             global.ClosedRequest.update({status:"sp_ack",display:"2"},{where: {sender:message.from , status: "created"}})
             global.node.id().then((info)=>{
-                console.log("------------------------server SP_ack infoid is:",info.id.toString())
+                console.log("server SP_ack infoid is written here:",info.id.toString())
                 documentPath='/ratings/' + info.id.toString() + '.txt'
+                console.log('The rating in spack is written here:',decoded_msg.rating.toString())
             global.node.files.write(documentPath, Buffer.from(info.id.toString()+'|'+decoded_msg.rating+'|'+decoded_msg.transact), {
                 create: true,
                 parents: true
@@ -150,7 +151,8 @@ server.listen(3000, async () => {
         {
             global.ClosedRequest.update({status:"c_ack"},{where: {sender:message.from , status: "sp_ack"}})
             global.node.id().then((info)=>{
-                console.log("------------------------server C_ack infoid is:",info.id.toString())
+                console.log("server C_ack infoid is:",info.id.toString())
+                console.log('The rating in cack is written here:',decoded_msg.rating.toString())
                 documentPath='/ratings/' + info.id.toString() + '.txt'
             global.node.files.write(documentPath, Buffer.from(info.id.toString()+'|'+decoded_msg.rating+'|'+decoded_msg.transact), {
                 create: true,
@@ -190,7 +192,9 @@ server.listen(3000, async () => {
         else if(decoded_msg.action == messageAction.RATE_UPDATE)
         {
             documentPath='/ratings/' + message.from.toString() + '.txt'
-            console.log("------------------------server rateupdate id is:",message.from. toString())
+            console.log("------------------------server rateupdate id is:",message.from.toString())
+            console.log("server rate_update documentpath is:",documentPath)
+            console.log('The rating in rate_update is written here:',decoded_msg.rating.toString())
             global.node.files.write(documentPath, Buffer.from(message.from.toString()+'|'+decoded_msg.rating+'|'+decoded_msg.transact), {
                 create: true,
                 parents: true

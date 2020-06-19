@@ -346,6 +346,19 @@ router.post('/sp_ack_cRequest' , function(req , res){
                             })
                             }
                             })
+                            global.ClosedRequest.update({status:"c_ack"},{where: {sender:sender.dataValues.ipfs , status: "sp_ack"}}).then((result)=>{    
+                                global.node.id().then((info)=>{
+                                    message.sendMessageToUser({
+                                        sender: info.id,
+                                        recipient: sender.dataValues.ipfs,
+                                        action:messageAction.SP_ACK,
+                                        rating:rating.toString(),
+                                        transact:transactions.toString()
+                                    } , sender.dataValues.ipfs).then((result)=>{
+                                        res.json({success : true})
+                                    })
+                                })
+                            })
                    } 
                    else {
                     promises.push(res)
@@ -390,22 +403,35 @@ router.post('/sp_ack_cRequest' , function(req , res){
                             })
                             }
                             })
+                            global.ClosedRequest.update({status:"c_ack"},{where: {sender:sender.dataValues.ipfs , status: "sp_ack"}}).then((result)=>{    
+                                global.node.id().then((info)=>{
+                                    message.sendMessageToUser({
+                                        sender: info.id,
+                                        recipient: sender.dataValues.ipfs,
+                                        action: messageAction.SP_ACK,
+                                        rating:rating.toString(),
+                                        transact:transactions.toString()
+                                    } , sender.dataValues.ipfs).then((result)=>{
+                                        res.json({success : true})
+                                    })
+                                })
+                            })
                 })
                    }
                    })
-    global.ClosedRequest.update({status:"sp_ack",display:"1"},{where: {sender:sender.dataValues.ipfs , status: "created"}}).then((result)=>{   
-        global.node.id().then((info)=>{
-            message.sendMessageToUser({
-                sender: info.id,
-                recipient: sender.dataValues.ipfs,
-                action: messageAction.SP_ACK,
-                rating:rating.toString(),
-                transact:transactions.toString()
-            } , sender.dataValues.ipfs).then((result)=>{
-                res.json({success : true})
-            })
-        })
-    })
+    // global.ClosedRequest.update({status:"sp_ack",display:"1"},{where: {sender:sender.dataValues.ipfs , status: "created"}}).then((result)=>{   
+    //     global.node.id().then((info)=>{
+    //         message.sendMessageToUser({
+    //             sender: info.id,
+    //             recipient: sender.dataValues.ipfs,
+    //             action: messageAction.SP_ACK,
+    //             rating:rating.toString(),
+    //             transact:transactions.toString()
+    //         } , sender.dataValues.ipfs).then((result)=>{
+    //             res.json({success : true})
+    //         })
+    //     })
+    // })
 })
 })
 
@@ -442,6 +468,19 @@ router.post('/c_ack_cRequest' , function(req , res){
                             console.log('File Hash = ' + hash)
                             })
                             }
+                            })
+                            global.ClosedRequest.update({status:"c_ack"},{where: {sender:sender.dataValues.ipfs , status: "sp_ack"}}).then((result)=>{    
+                                global.node.id().then((info)=>{
+                                    message.sendMessageToUser({
+                                        sender: info.id,
+                                        recipient: sender.dataValues.ipfs,
+                                        action: messageAction.C_ACK,
+                                        rating:rating.toString(),
+                                        transact:transactions.toString()
+                                    } , sender.dataValues.ipfs).then((result)=>{
+                                        res.json({success : true})
+                                    })
+                                })
                             })
                    } 
                    else {
@@ -487,6 +526,19 @@ router.post('/c_ack_cRequest' , function(req , res){
                             })
                             }
                             })
+                            global.ClosedRequest.update({status:"c_ack"},{where: {sender:sender.dataValues.ipfs , status: "sp_ack"}}).then((result)=>{    
+                                global.node.id().then((info)=>{
+                                    message.sendMessageToUser({
+                                        sender: info.id,
+                                        recipient: sender.dataValues.ipfs,
+                                        action: messageAction.C_ACK,
+                                        rating:rating.toString(),
+                                        transact:transactions.toString()
+                                    } , sender.dataValues.ipfs).then((result)=>{
+                                        res.json({success : true})
+                                    })
+                                })
+                            })
                 })
                    }
                    })
@@ -530,19 +582,19 @@ router.post('/c_ack_cRequest' , function(req , res){
             //             }
             //             })
             // })
-        global.ClosedRequest.update({status:"c_ack"},{where: {sender:sender.dataValues.ipfs , status: "sp_ack"}}).then((result)=>{    
-        global.node.id().then((info)=>{
-            message.sendMessageToUser({
-                sender: info.id,
-                recipient: sender.dataValues.ipfs,
-                action: messageAction.C_ACK,
-                rating:rating.toString(),
-                transact:transactions.toString()
-            } , sender.dataValues.ipfs).then((result)=>{
-                res.json({success : true})
-            })
-        })
-    })
+    //     global.ClosedRequest.update({status:"c_ack"},{where: {sender:sender.dataValues.ipfs , status: "sp_ack"}}).then((result)=>{    
+    //     global.node.id().then((info)=>{
+    //         message.sendMessageToUser({
+    //             sender: info.id,
+    //             recipient: sender.dataValues.ipfs,
+    //             action: messageAction.C_ACK,
+    //             rating:rating.toString(),
+    //             transact:transactions.toString()
+    //         } , sender.dataValues.ipfs).then((result)=>{
+    //             res.json({success : true})
+    //         })
+    //     })
+    // })
 })
 })
 
