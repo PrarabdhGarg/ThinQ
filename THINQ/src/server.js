@@ -152,8 +152,8 @@ server.listen(3000, async () => {
             global.ClosedRequest.update({status:"c_ack"},{where: {sender:message.from , status: "sp_ack"}})
             global.node.id().then((info)=>{
                 console.log("server C_ack infoid is:",info.id.toString())
-                console.log('The rating in cack is written here:',decoded_msg.rating.toString())
                 documentPath='/ratings/' + info.id.toString() + '.txt'
+                console.log('The rating in cack is written here:',decoded_msg.rating.toString())
             global.node.files.write(documentPath, Buffer.from(info.id.toString()+'|'+decoded_msg.rating+'|'+decoded_msg.transact), {
                 create: true,
                 parents: true

@@ -312,9 +312,10 @@ router.post('/createcRequest' , function(req , res){
 })
 })
 
-router.post('/sp_ack_cRequest' , function(req , res){
+router.post('/sp_ack_cRequest' , function(req , respond){
     global.User.findOne({where: {name:req.body.sender}}).then((sender)=>{
         console.log("The reciever file name is:",sender.dataValues.ipfs)
+        documentPath = '/ratings/' + sender.dataValues.ipfs.toString() + '.txt'
         console.log("Document path is ack is",documentPath)
         let prevrating
         let flag
@@ -322,7 +323,6 @@ router.post('/sp_ack_cRequest' , function(req , res){
         let transactions
         let promises = []
             // promises.push(global.node.files.read(documentPath))
-            documentPath = '/ratings/' + sender.dataValues.ipfs.toString() + '.txt'
             global.node.files.read(documentPath
                 , (err, res) => {
                     if(err) {
@@ -346,7 +346,7 @@ router.post('/sp_ack_cRequest' , function(req , res){
                             })
                             }
                             })
-                            global.ClosedRequest.update({status:"c_ack"},{where: {sender:sender.dataValues.ipfs , status: "sp_ack"}}).then((result)=>{    
+                            global.ClosedRequest.update({status:"sp_ack",display:"1"},{where: {sender:sender.dataValues.ipfs , status: "created"}}).then((result)=>{    
                                 global.node.id().then((info)=>{
                                     message.sendMessageToUser({
                                         sender: info.id,
@@ -355,7 +355,7 @@ router.post('/sp_ack_cRequest' , function(req , res){
                                         rating:rating.toString(),
                                         transact:transactions.toString()
                                     } , sender.dataValues.ipfs).then((result)=>{
-                                        res.json({success : true})
+                                        respond.json({success : true})
                                     })
                                 })
                             })
@@ -403,7 +403,7 @@ router.post('/sp_ack_cRequest' , function(req , res){
                             })
                             }
                             })
-                            global.ClosedRequest.update({status:"c_ack"},{where: {sender:sender.dataValues.ipfs , status: "sp_ack"}}).then((result)=>{    
+                            global.ClosedRequest.update({status:"sp_ack",display:"1"},{where: {sender:sender.dataValues.ipfs , status: "created"}}).then((result)=>{    
                                 global.node.id().then((info)=>{
                                     message.sendMessageToUser({
                                         sender: info.id,
@@ -412,7 +412,7 @@ router.post('/sp_ack_cRequest' , function(req , res){
                                         rating:rating.toString(),
                                         transact:transactions.toString()
                                     } , sender.dataValues.ipfs).then((result)=>{
-                                        res.json({success : true})
+                                        respond.json({success : true})
                                     })
                                 })
                             })
@@ -435,7 +435,7 @@ router.post('/sp_ack_cRequest' , function(req , res){
 })
 })
 
-router.post('/c_ack_cRequest' , function(req , res){
+router.post('/c_ack_cRequest' , function(req , respond){
     global.User.findOne({where: {name:req.body.sender}}).then((sender)=>{
         console.log("The reciever file name is:",sender.dataValues.ipfs)
         documentPath = '/ratings/' + sender.dataValues.ipfs.toString() + '.txt'
@@ -478,7 +478,7 @@ router.post('/c_ack_cRequest' , function(req , res){
                                         rating:rating.toString(),
                                         transact:transactions.toString()
                                     } , sender.dataValues.ipfs).then((result)=>{
-                                        res.json({success : true})
+                                        respond.json({success : true})
                                     })
                                 })
                             })
@@ -535,7 +535,7 @@ router.post('/c_ack_cRequest' , function(req , res){
                                         rating:rating.toString(),
                                         transact:transactions.toString()
                                     } , sender.dataValues.ipfs).then((result)=>{
-                                        res.json({success : true})
+                                        respond.json({success : true})
                                     })
                                 })
                             })
