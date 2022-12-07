@@ -22,7 +22,7 @@
     "browserify": "^16.5.1",
     "choo": "^7.1.0",
     "http-server": "^0.12.3",
-    "ipfs": "^0.33.1",
+    "ipfs": "^0.65.0",
     "ipfs-pubsub-room": "^1.4.1",
     "it-to-buffer": "^1.0.2",
     "md5": "^2.2.1",
